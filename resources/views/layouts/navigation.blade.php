@@ -292,10 +292,12 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="width: 330px; max-height: 420px; overflow-y: auto;">
                                 <li class="px-3 py-2 bg-light border-bottom d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold small text-danger">
+                                    <a href="{{ route('productos_consumibles.index', ['estado' => 'critico']) }}" class="fw-bold small text-danger text-decoration-none">
                                         <i class="fas fa-exclamation-triangle me-1"></i> Stock Crítico (≤ 10%)
-                                    </span>
-                                    <span class="badge bg-danger rounded-pill">{{ $countStockCritico }}</span>
+                                    </a>
+                                    <a href="{{ route('productos_consumibles.index', ['estado' => 'critico']) }}" class="badge bg-danger rounded-pill text-decoration-none" title="Ver consumibles críticos">
+                                        {{ $countStockCritico }}
+                                    </a>
                                 </li>
                                 <li class="p-2 border-bottom bg-white">
                                     <button type="button" class="btn btn-sm btn-outline-primary w-100 rounded-pill py-1 d-flex align-items-center justify-content-center gap-1 shadow-xs" onclick="activarPushNotificaciones()">
@@ -319,9 +321,12 @@
                                 @empty
                                     <li><span class="dropdown-item text-muted text-center py-3"><i class="fas fa-check-circle text-success me-2"></i>Todo el stock es estable.</span></li>
                                 @endforelse
-                                <li class="p-2 text-center bg-light">
+                                <li class="p-2 bg-light d-flex justify-content-between align-items-center px-3">
+                                    <a href="{{ route('productos_consumibles.index', ['estado' => 'critico']) }}" class="small text-decoration-none fw-semibold text-danger">
+                                        <i class="fas fa-exclamation-triangle me-1"></i> Ver críticos
+                                    </a>
                                     <a href="{{ route('productos_consumibles.index') }}" class="small text-decoration-none fw-semibold text-primary">
-                                        Ver todos los consumibles <i class="fas fa-arrow-right ms-1"></i>
+                                        Ver todos <i class="fas fa-arrow-right ms-1"></i>
                                     </a>
                                 </li>
                             </ul>

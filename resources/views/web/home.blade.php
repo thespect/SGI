@@ -103,8 +103,11 @@
                             <i class="fas fa-bell me-1"></i> Activar Notificaciones Push
                         </button>
                         @if (tienePermiso('consumible - leer'))
-                        <a href="{{ route('productos_consumibles.index') }}" class="btn btn-sm btn-danger rounded-pill px-3 shadow-xs">
-                            <i class="fas fa-boxes me-1"></i> Gestionar Consumibles
+                        <a href="{{ route('productos_consumibles.index', ['estado' => 'critico']) }}" class="btn btn-sm btn-danger rounded-pill px-3 shadow-xs">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Ver Críticos ({{ $totalConsumiblesCriticos }})
+                        </a>
+                        <a href="{{ route('productos_consumibles.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-xs">
+                            <i class="fas fa-boxes me-1"></i> Todos
                         </a>
                         @endif
                     </div>
@@ -114,16 +117,20 @@
                 <!-- Indicadores Rápidos -->
                 <div class="row g-2 mb-3">
                     <div class="col-md-6 col-lg-3">
-                        <div class="p-2 rounded-3 bg-light d-flex align-items-center justify-content-between">
-                            <span class="text-muted small"><i class="fas fa-ban text-danger me-1"></i> Completamente Agotados:</span>
-                            <span class="badge bg-danger fw-bold fs-6">{{ $consumiblesAgotados }}</span>
-                        </div>
+                        <a href="{{ route('productos_consumibles.index', ['estado' => 'agotado']) }}" class="text-decoration-none">
+                            <div class="p-2 rounded-3 bg-light d-flex align-items-center justify-content-between border hover-border-danger" style="transition: all 0.2s ease;">
+                                <span class="text-muted small"><i class="fas fa-ban text-danger me-1"></i> Completamente Agotados:</span>
+                                <span class="badge bg-danger fw-bold fs-6">{{ $consumiblesAgotados }}</span>
+                            </div>
+                        </a>
                     </div>
                     <div class="col-md-6 col-lg-3">
-                        <div class="p-2 rounded-3 bg-light d-flex align-items-center justify-content-between">
-                            <span class="text-muted small"><i class="fas fa-battery-quarter text-warning me-1"></i> Por Agotarse (1 a 10):</span>
-                            <span class="badge bg-warning text-dark fw-bold fs-6">{{ $consumiblesPorAgotar }}</span>
-                        </div>
+                        <a href="{{ route('productos_consumibles.index', ['estado' => 'critico']) }}" class="text-decoration-none">
+                            <div class="p-2 rounded-3 bg-light d-flex align-items-center justify-content-between border hover-border-warning" style="transition: all 0.2s ease;">
+                                <span class="text-muted small"><i class="fas fa-battery-quarter text-warning me-1"></i> Por Agotarse (1 a 10):</span>
+                                <span class="badge bg-warning text-dark fw-bold fs-6">{{ $consumiblesPorAgotar }}</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -135,7 +142,9 @@
                             <div>
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="fw-bold mb-0 text-dark text-truncate me-2" title="{{ $item->nombre }}">
-                                        {{ $item->nombre }}
+                                        <a href="{{ route('productos_consumibles.view', $item->consumible_id) }}" class="text-decoration-none text-dark hover-primary">
+                                            {{ $item->nombre }}
+                                        </a>
                                     </h6>
                                     @if($item->existencia <= 0)
                                         <span class="badge bg-danger px-2 py-1 rounded-pill">0 unidades</span>
@@ -164,7 +173,7 @@
 
                 @if($totalConsumiblesCriticos > 6)
                 <div class="text-center mt-3 pt-2 border-top">
-                    <a href="{{ route('productos_consumibles.index') }}" class="text-decoration-none fw-semibold small text-danger">
+                    <a href="{{ route('productos_consumibles.index', ['estado' => 'critico']) }}" class="text-decoration-none fw-semibold small text-danger">
                         Ver los {{ $totalConsumiblesCriticos - 6 }} consumibles críticos restantes <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>

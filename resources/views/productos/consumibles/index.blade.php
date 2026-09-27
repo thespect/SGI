@@ -38,15 +38,18 @@ $etiquetasUnicas = \App\Models\Etiqueta::obtenerEtiquetasActivas();
     <div class="card glass-nav border-0 shadow-sm overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <div class="mb-4" style="padding: 20px;">
-                    <form action="{{ route('imprimirConsumibles') }}" method="post" class="print-form">
+                <div class="p-3 pb-0 d-flex flex-wrap justify-content-between align-items-center">
+                    <form action="{{ route('imprimirConsumibles') }}" method="post" class="print-form mb-2">
                         @csrf
                         <input type="hidden" name="producto" value='@json($productosConsumiblesTodos)'>
                         <button type="submit" class="print-button">
-                            <i class="fas fa-print"></i> Imprimir Reporte
+                            <i class="fas fa-print me-1"></i> Imprimir Reporte
                         </button>
                     </form>
-                    <form id="form-filtros" onsubmit="event.preventDefault(); fetchConsumibles();">
+                </div>
+
+                <form id="form-filtros" onsubmit="event.preventDefault(); fetchConsumibles();">
+                    <div class="px-3 pb-3 d-flex flex-wrap align-items-center">
                         <strong class="me-2"><i class="fas fa-tags me-1"></i>Filtrar por categoría:</strong>
                         <input type="hidden" name="etiquetas[]" value="" />
                         @foreach($etiquetasUnicas as $etiqueta)
@@ -55,40 +58,63 @@ $etiquetasUnicas = \App\Models\Etiqueta::obtenerEtiquetasActivas();
                             {{ $etiqueta->nombre }}
                         </label>
                         @endforeach
-                </div>
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4" style="width: 60px;">#</th>
-                            <th>Nombre</th>
-                            <th>Empresa</th>
-                            <th>Ubicación</th>
-                            <th>Existencia</th>
-                            <th>Estado</th>
-                            <th>Fecha Registro</th>
-                            <th class="pe-4 text-end">Acciones</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <th><input type="text" name="nombre" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Buscar nombre..." value="{{ request('nombre') }}"></th>
-                            <th><input type="text" name="empresa" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Buscar empresa..." value="{{ request('empresa') }}"></th>
-                            <th><input type="text" name="ubicacion" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Buscar ubicación..." value="{{ request('ubicacion') }}"></th>
-                            <th></th>
-                            <th><input type="text" name="estado" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Estado..." value="{{ request('estado') }}"></th>
-                            <th><input type="date" name="fecha_registro" class="form-control form-control-sm filtro-api-consumible" value="{{ request('fecha_registro') }}" style="min-width: 130px;"></th>
-                            <th><button type="button" class="btn btn-sm btn-primary" onclick="fetchConsumibles()"><i class="fas fa-search"></i></button></th>
-                        </tr>
-                    </thead>
-                    </form>
-                    <tbody id="tbody-consumibles">
-                        <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
-                                <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                                Cargando productos...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    </div>
+
+                    @if(in_array(request('estado'), ['critico', 'criticos', 'bajo']) || request('critico') || request('stock') === 'critico')
+                    <div class="mx-3 mb-3 alert alert-warning border-0 bg-warning bg-opacity-10 d-flex justify-content-between align-items-center py-2 px-3 rounded-3" id="banner-filtro-critico">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-warning fs-5"></i>
+                            <div>
+                                <strong class="text-dark">Mostrando consumibles críticos (Stock ≤ 10 unidades)</strong>
+                                <span class="text-muted small ms-2 d-none d-md-inline">Insumos que requieren reabastecimiento o compra inmediata.</span>
+                            </div>
+                        </div>
+                        <a href="{{ route('productos_consumibles.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                            <i class="fas fa-times me-1"></i> Quitar filtro
+                        </a>
+                    </div>
+                    @endif
+
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4" style="width: 60px;">#</th>
+                                <th>Nombre</th>
+                                <th>Empresa</th>
+                                <th>Ubicación</th>
+                                <th>Existencia</th>
+                                <th>Estado</th>
+                                <th>Fecha Registro</th>
+                                <th class="pe-4 text-end">Acciones</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th><input type="text" name="nombre" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Buscar nombre..." value="{{ request('nombre') }}"></th>
+                                <th><input type="text" name="empresa" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Buscar empresa..." value="{{ request('empresa') }}"></th>
+                                <th><input type="text" name="ubicacion" class="form-control form-control-sm filtro-api-consumible-text" placeholder="Buscar ubicación..." value="{{ request('ubicacion') }}"></th>
+                                <th></th>
+                                <th>
+                                    <select name="estado" class="form-select form-select-sm filtro-api-consumible">
+                                        <option value="">-- Todos --</option>
+                                        <option value="critico" {{ in_array(request('estado'), ['critico', 'criticos', 'bajo']) || request('critico') || request('stock') === 'critico' ? 'selected' : '' }}>⚠️ Críticos (≤ 10)</option>
+                                        <option value="agotado" {{ request('estado') == 'agotado' ? 'selected' : '' }}>🚫 Agotados (0)</option>
+                                        <option value="activo" {{ request('estado') == 'activo' ? 'selected' : '' }}>✅ Con stock (> 0)</option>
+                                    </select>
+                                </th>
+                                <th><input type="date" name="fecha_registro" class="form-control form-control-sm filtro-api-consumible" value="{{ request('fecha_registro') }}" style="min-width: 130px;"></th>
+                                <th><button type="button" class="btn btn-sm btn-primary" onclick="fetchConsumibles()"><i class="fas fa-search"></i></button></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-consumibles">
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                    Cargando productos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
     </div>
@@ -156,7 +182,21 @@ async function fetchConsumibles(page = 1) {
             params.append(key, val.trim());
         }
     }
+
+    // Sincronizar parámetro critico si venía en URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if ((urlParams.get('critico') === '1' || urlParams.get('stock') === 'critico') && !params.has('estado')) {
+        params.set('estado', 'critico');
+        const selectEstado = form.querySelector('select[name="estado"]');
+        if (selectEstado) selectEstado.value = 'critico';
+    }
+
     params.set('page', page);
+
+    const bannerCritico = document.getElementById('banner-filtro-critico');
+    if (bannerCritico) {
+        bannerCritico.style.display = (params.get('estado') === 'critico') ? 'flex' : 'none';
+    }
 
     try {
         const res = await fetch("{{ route('api.productos.consumibles') }}?" + params.toString(), {
@@ -168,7 +208,7 @@ async function fetchConsumibles(page = 1) {
 
         if (!res.ok) {
             const errJson = await res.json().catch(() => null);
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle fa-2x mb-2 text-warning d-block"></i><p class="mb-0 fw-semibold">${escapeHtmlConsumible(errJson?.message || 'Error al obtener consumibles (' + res.status + ')')}</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle fa-2x mb-2 text-warning d-block"></i><p class="mb-0 fw-semibold">${escapeHtmlConsumible(errJson?.message || 'Error al obtener consumibles (' + res.status + ')')}</p></td></tr>`;
             return;
         }
 
@@ -177,11 +217,11 @@ async function fetchConsumibles(page = 1) {
         if (json.success) {
             renderTablaConsumibles(json.data, json.meta);
         } else {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-warning"><i class="fas fa-info-circle fa-2x mb-2 d-block"></i><p class="mb-0">${escapeHtmlConsumible(json.message || 'No se encontraron resultados')}</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-warning"><i class="fas fa-info-circle fa-2x mb-2 d-block"></i><p class="mb-0">${escapeHtmlConsumible(json.message || 'No se encontraron resultados')}</p></td></tr>`;
         }
     } catch (e) {
         console.error('Error consultando API consumibles:', e);
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger"><i class="fas fa-unlink fa-2x mb-2 d-block"></i><p class="mb-0">Error de conexión al cargar consumibles.</p></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger"><i class="fas fa-unlink fa-2x mb-2 d-block"></i><p class="mb-0">Error de conexión al cargar consumibles.</p></td></tr>`;
     } finally {
         tbody.style.opacity = '1';
     }
@@ -209,7 +249,21 @@ function renderTablaConsumibles(data, meta) {
     data.forEach((p, idx) => {
         const num = offset + idx + 1;
         const fecha = p.fecha_registro ? formatDate(p.fecha_registro) : 'N/A';
-        const estadoBadge = p.estado === 'activo' ? 'success' : 'secondary';
+        const exist = Number(p.existencia ?? 0);
+
+        let estadoHtml = '';
+        let existenciaHtml = '';
+
+        if (exist <= 0) {
+            estadoHtml = '<span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="fas fa-ban me-1"></i>Agotado</span>';
+            existenciaHtml = '<span class="badge bg-danger rounded-pill px-2 py-1 fw-bold">0</span>';
+        } else if (exist <= 10) {
+            estadoHtml = `<span class="badge rounded-pill bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-2 py-1"><i class="fas fa-exclamation-triangle me-1 text-warning"></i>Crítico</span>`;
+            existenciaHtml = `<span class="badge bg-warning text-dark rounded-pill px-2 py-1 fw-bold">${exist}</span>`;
+        } else {
+            estadoHtml = '<span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="fas fa-check me-1"></i>Activo</span>';
+            existenciaHtml = `<span class="fw-semibold text-dark">${exist}</span>`;
+        }
 
         html += `
             <tr class="hover-scale">
@@ -225,12 +279,8 @@ function renderTablaConsumibles(data, meta) {
                         <i class="fas fa-map-marker-alt me-1"></i> ${escapeHtmlConsumible(p.ubicacion || 'Sin ubicación')}
                     </span>
                 </td>
-                <td>${p.existencia || 0}</td>
-                <td>
-                    <span class="badge rounded-pill bg-${estadoBadge} bg-opacity-10 text-${estadoBadge}">
-                        ${capitalizeConsumible(p.estado || 'desconocido')}
-                    </span>
-                </td>
+                <td>${existenciaHtml}</td>
+                <td>${estadoHtml}</td>
                 <td><span class="text-muted">${fecha}</span></td>
                 <td class="pe-4 text-end">
                     <div class="d-flex justify-content-end gap-2">
@@ -255,6 +305,10 @@ function renderTablaConsumibles(data, meta) {
 function renderPaginacionConsumibles(meta) {
     const info = document.getElementById('info-paginacion-consumibles');
     const nav = document.getElementById('links-paginacion-consumibles');
+    const totalBadge = document.getElementById('badge-total-consumibles');
+    if (totalBadge && meta) {
+        totalBadge.innerHTML = `<i class="fas fa-cubes me-1"></i> Total: ${meta.total}`;
+    }
     if (!meta || !info || !nav) return;
 
     const first = (meta.current_page - 1) * meta.per_page + 1;

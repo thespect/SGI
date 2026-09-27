@@ -70,7 +70,20 @@ class ConsumibleController extends Controller
         }
         
         if ($request->filled('estado')) {
-            $query->where(DB::raw("IF(productos_consumibles.existencia > 0, 'activo', 'agotado')"), $request->estado);
+            $estadoFiltro = strtolower(trim($request->estado));
+            if (in_array($estadoFiltro, ['critico', 'criticos', 'bajo'])) {
+                $query->where('productos_consumibles.existencia', '<=', 10);
+            } elseif (in_array($estadoFiltro, ['agotado', 'agotados'])) {
+                $query->where('productos_consumibles.existencia', '<=', 0);
+            } elseif (in_array($estadoFiltro, ['activo', 'activos'])) {
+                $query->where('productos_consumibles.existencia', '>', 0);
+            } elseif (in_array($estadoFiltro, ['suficiente', 'estable'])) {
+                $query->where('productos_consumibles.existencia', '>', 10);
+            } else {
+                $query->where(DB::raw("IF(productos_consumibles.existencia > 0, 'activo', 'agotado')"), $estadoFiltro);
+            }
+        } elseif ($request->boolean('critico') || $request->stock === 'critico') {
+            $query->where('productos_consumibles.existencia', '<=', 10);
         }
         
         if ($request->filled('fecha_registro')) {
@@ -88,6 +101,16 @@ class ConsumibleController extends Controller
                         ->whereIn(DB::raw('lower(etiquetas.nombre)'), array_map('strtolower', $etiquetas));
                 });
             }
+        }
+
+        $esCritico = in_array(strtolower(trim($request->get('estado', ''))), ['critico', 'criticos', 'bajo'])
+            || $request->boolean('critico')
+            || $request->stock === 'critico';
+
+        if ($esCritico) {
+            $query->orderBy('productos_consumibles.existencia', 'asc')->orderBy('productos.nombre', 'asc');
+        } else {
+            $query->orderBy('productos.nombre', 'asc');
         }
 
         $productosConsumibles = $query->paginate($cantidadPorPagina)->appends($request->all());

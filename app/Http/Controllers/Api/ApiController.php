@@ -335,7 +335,25 @@ class ApiController extends Controller
             if ($request->filled('nombre'))    $query->where('productos.nombre', 'like', '%' . $request->nombre . '%');
             if ($request->filled('empresa'))   $query->where('empresa.nombre', 'like', '%' . $request->empresa . '%');
             if ($request->filled('ubicacion')) $query->where('ubicacion.nombre', 'like', '%' . $request->ubicacion . '%');
-            if ($request->filled('estado'))    $query->where(DB::raw("IF(productos_consumibles.existencia > 0, 'activo', 'agotado')"), $request->estado);
+
+            // Filtro de estado / stock crítico
+            if ($request->filled('estado')) {
+                $estadoFiltro = strtolower(trim($request->estado));
+                if (in_array($estadoFiltro, ['critico', 'criticos', 'bajo'])) {
+                    $query->where('productos_consumibles.existencia', '<=', 10);
+                } elseif (in_array($estadoFiltro, ['agotado', 'agotados'])) {
+                    $query->where('productos_consumibles.existencia', '<=', 0);
+                } elseif (in_array($estadoFiltro, ['activo', 'activos'])) {
+                    $query->where('productos_consumibles.existencia', '>', 0);
+                } elseif (in_array($estadoFiltro, ['suficiente', 'estable'])) {
+                    $query->where('productos_consumibles.existencia', '>', 10);
+                } else {
+                    $query->where(DB::raw("IF(productos_consumibles.existencia > 0, 'activo', 'agotado')"), $estadoFiltro);
+                }
+            } elseif ($request->boolean('critico') || $request->stock === 'critico') {
+                $query->where('productos_consumibles.existencia', '<=', 10);
+            }
+
             if ($request->filled('fecha_registro')) $query->whereDate('productos.fecha_registro', $request->fecha_registro);
 
             // Filtro de etiquetas
@@ -351,7 +369,18 @@ class ApiController extends Controller
                 }
             }
 
-            $paginator = $query->orderBy('productos.nombre', 'asc')->paginate($this->perPage($request));
+            $esCritico = in_array(strtolower(trim($request->get('estado', ''))), ['critico', 'criticos', 'bajo'])
+                || $request->boolean('critico')
+                || $request->stock === 'critico';
+
+            if ($esCritico) {
+                $query->orderBy('productos_consumibles.existencia', 'asc')
+                      ->orderBy('productos.nombre', 'asc');
+            } else {
+                $query->orderBy('productos.nombre', 'asc');
+            }
+
+            $paginator = $query->paginate($this->perPage($request));
             return $this->paginated($paginator);
 
         } catch (\Throwable $e) {
