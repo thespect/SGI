@@ -48,6 +48,15 @@ class RolesAndHierarchySeeder extends Seeder
                 ->whereIn('permiso_id', $rolesGestionIds)
                 ->update(['status' => 'inactivo']);
 
+            // El Administrador NO puede borrar definitivamente nada (exclusivo Super Admin)
+            $desactivarIds = DB::table('vista_permisos')
+                ->where('rol', $rolAdmin->id)
+                ->where('permiso_nombre', 'like', '%desactivar%')
+                ->pluck('id');
+
+            PermisoRol::whereIn('id', $desactivarIds)
+                ->update(['status' => 'inactivo']);
+
             // 4. Permisos para Almacenistas (ID 3):
             // Control operativo total de inventario (fijos, compra/venta, consumibles, vehiculos)
             PermisoRol::where('rol_id', 3)->where('permiso_tipo', 'categoria')->update(['status' => 'activo']);
