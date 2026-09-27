@@ -84,15 +84,18 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <label for="precio" class="form-label mb-0">Precio ($)</label>
-                                            <div class="form-check form-check-inline mb-0 me-0">
-                                                <input class="form-check-input" type="checkbox" id="no_aplica_precio_consumible" onchange="toggleNoAplicaPrecioConsumible(this, 'precio')">
-                                                <label class="form-check-label text-muted small" for="no_aplica_precio_consumible">No aplica</label>
+                                            <label for="precio" class="form-label mb-0 fw-medium">Precio ($)</label>
+                                            <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="no_aplica_precio_consumible" onchange="toggleNoAplicaPrecioConsumible(this, 'precio')" style="cursor: pointer; width: 2.2em; height: 1.1em;">
+                                                <label class="form-check-label small fw-semibold text-secondary user-select-none" for="no_aplica_precio_consumible" style="cursor: pointer;">No aplica (N.A.)</label>
                                             </div>
                                         </div>
                                         <div class="input-group">
-                                            <span class="input-group-text">$</span>
+                                            <span class="input-group-text bg-light fw-bold" id="addon-precio-consumible">$</span>
                                             <input type="number" name="precio" id="precio" class="form-control" step="0.01" min="0" max="999999.99" value="1.00" placeholder="0.00">
+                                        </div>
+                                        <div id="hint-na-precio-consumible" class="form-text text-muted small d-none">
+                                            <i class="fas fa-info-circle me-1 text-primary"></i>Este consumible se registrará sin costo asignado (N.A.).
                                         </div>
                                     </div>
 
@@ -228,17 +231,26 @@
 
     function toggleNoAplicaPrecioConsumible(checkbox, inputId) {
         const input = document.getElementById(inputId);
+        const addon = document.getElementById('addon-precio-consumible');
+        const hint = document.getElementById('hint-na-precio-consumible');
         if (!input) return;
         if (checkbox.checked) {
             input.dataset.oldValue = input.value;
             input.value = '';
             input.disabled = true;
+            input.placeholder = 'N.A. (No aplica)';
             input.removeAttribute('required');
-            input.classList.add('bg-light');
+            input.classList.add('bg-light', 'text-muted');
+            if (addon) addon.classList.add('opacity-50');
+            if (hint) hint.classList.remove('d-none');
         } else {
             input.disabled = false;
+            input.placeholder = '0.00';
             input.value = input.dataset.oldValue || '1.00';
-            input.classList.remove('bg-light');
+            input.classList.remove('bg-light', 'text-muted');
+            if (addon) addon.classList.remove('opacity-50');
+            if (hint) hint.classList.add('d-none');
+            input.focus();
         }
     }
 </script>

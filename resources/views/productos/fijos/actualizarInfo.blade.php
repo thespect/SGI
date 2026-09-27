@@ -71,19 +71,23 @@
                         <!-- Precio -->
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label for="precioInput" class="form-label fw-medium mb-0">Precio</label>
-                                <div class="form-check form-check-inline mb-0 me-0">
-                                    <input class="form-check-input" type="checkbox" id="no_aplica_precio_edit" 
+                                <label for="precioInput" class="form-label fw-medium mb-0">Precio ($)</label>
+                                <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="no_aplica_precio_edit" 
                                            {{ is_null($producto->precio) ? 'checked' : '' }}
-                                           onchange="toggleNoAplicaPrecioEdit(this, 'precioInput')">
-                                    <label class="form-check-label text-muted small" for="no_aplica_precio_edit">No aplica</label>
+                                           onchange="toggleNoAplicaPrecioEdit(this, 'precioInput')"
+                                           style="cursor: pointer; width: 2.2em; height: 1.1em;">
+                                    <label class="form-check-label small fw-semibold text-secondary user-select-none" for="no_aplica_precio_edit" style="cursor: pointer;">No aplica (N.A.)</label>
                                 </div>
                             </div>
                             <div class="input-group">
-                                <span class="input-group-text bg-light">$</span>
-                                <input type="number" step="0.01" min="0" class="form-control shadow-sm {{ is_null($producto->precio) ? 'bg-light' : '' }}" id="precioInput"
+                                <span class="input-group-text bg-light fw-bold {{ is_null($producto->precio) ? 'opacity-50' : '' }}" id="addon-precio-edit">$</span>
+                                <input type="number" step="0.01" min="0" class="form-control shadow-sm {{ is_null($producto->precio) ? 'bg-light text-muted' : '' }}" id="precioInput"
                                     name="precio" value="{{ $producto->precio }}" {{ is_null($producto->precio) ? 'disabled' : '' }}
-                                    placeholder="0.00">
+                                    placeholder="{{ is_null($producto->precio) ? 'N.A. (No aplica)' : '0.00' }}">
+                            </div>
+                            <div id="hint-na-precio-edit" class="form-text text-muted small {{ is_null($producto->precio) ? '' : 'd-none' }}">
+                                <i class="fas fa-info-circle me-1 text-primary"></i>Este artículo no tiene costo asignado (N.A.).
                             </div>
                         </div>
 
@@ -176,16 +180,25 @@
 <script>
 function toggleNoAplicaPrecioEdit(checkbox, inputId) {
     const input = document.getElementById(inputId);
+    const addon = document.getElementById('addon-precio-edit');
+    const hint = document.getElementById('hint-na-precio-edit');
     if (!input) return;
     if (checkbox.checked) {
         input.dataset.oldValue = input.value;
         input.value = '';
         input.disabled = true;
-        input.classList.add('bg-light');
+        input.placeholder = 'N.A. (No aplica)';
+        input.classList.add('bg-light', 'text-muted');
+        if (addon) addon.classList.add('opacity-50');
+        if (hint) hint.classList.remove('d-none');
     } else {
         input.disabled = false;
+        input.placeholder = '0.00';
         input.value = input.dataset.oldValue || '0.00';
-        input.classList.remove('bg-light');
+        input.classList.remove('bg-light', 'text-muted');
+        if (addon) addon.classList.remove('opacity-50');
+        if (hint) hint.classList.add('d-none');
+        input.focus();
     }
 }
 </script>
