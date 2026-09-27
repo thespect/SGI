@@ -99,6 +99,7 @@ Route::controller(VehiculosController::class)->prefix('vehiculos')->group(functi
     Route::get('/{id}/generar-vale', 'generarValeSalida')->name('vehiculos.generarVale');
     Route::put('/{id}', 'actualizar')->name('vehiculos.actualizar');
     Route::put('/{id}/eliminar', 'eliminar')->name('vehiculos.eliminar');
+    Route::put('/{id}/reactivar', 'reactivar')->name('vehiculos.reactivar');
     Route::post('/documentacion/crear/{id}', 'insertarDocumentacion')->name('vehiculos.documentacion.insertar');
     Route::post('/mantenimiento/crear/{id}', 'insertarMantenimiento')->name('vehiculos.mantenimiento.insertar');
 });

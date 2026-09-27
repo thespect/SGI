@@ -152,9 +152,10 @@ class ResponsivaController extends Controller
             ->where('estado', '!=', 'baja')
             ->get();
 
-            // Consultar vehículos asignados
+            // Consultar vehículos asignados activos
             $vehiculos = Vehiculo::with('ubicacion')
                 ->where('responsable', $id)
+                ->where('eliminado', 0)
                 ->get();
 
             if ($fijos->isEmpty() && $vehiculos->isEmpty()) {

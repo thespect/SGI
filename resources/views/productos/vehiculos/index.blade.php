@@ -80,7 +80,13 @@
                                     </select>
                                 </th>
                                 <th><input type="text" name="año" class="form-control form-control-sm filtro-api-vehiculo-text" placeholder="Año..." value="{{ request('año') }}"></th>
-                                <th></th>
+                                <th>
+                                    <select name="estado" class="form-select form-select-sm filtro-api-vehiculo">
+                                        <option value="">-- Todos --</option>
+                                        <option value="activo" {{ request('estado') == 'activo' ? 'selected' : '' }}>Activos</option>
+                                        <option value="inactivo" {{ request('estado') == 'inactivo' ? 'selected' : '' }}>Inactivos</option>
+                                    </select>
+                                </th>
                                 <th class="text-end">
                                     <button type="button" class="btn btn-sm btn-primary" onclick="fetchVehiculos()"><i class="fas fa-search"></i></button>
                                 </th>

@@ -35,12 +35,19 @@ class VehiculosController extends Controller
                 'vehiculos.*',
                 'ubicacion.nombre as ubicacion',
                 DB::raw("CONCAT(u.nombre, ' ', u.apellido) as responsable_nombre"),
-                DB::raw("IF(vehiculos.eliminado = 0, 'activo', 'eliminado') as estado")
+                DB::raw("IF(vehiculos.eliminado = 0, 'activo', 'inactivo') as estado")
             )
             ->join('ubicacion', 'vehiculos.ubicacion_id', '=', 'ubicacion.id')
             ->join('usuario as u', 'vehiculos.responsable', '=', 'u.id')
-            ->where('vehiculos.eliminado', 0)
             ->whereIn('vehiculos.ubicacion_id', $ubicacionesPermitidas);
+
+        if ($request->filled('estado')) {
+            if ($request->estado === 'activo') {
+                $query->where('vehiculos.eliminado', 0);
+            } elseif ($request->estado === 'inactivo') {
+                $query->where('vehiculos.eliminado', 1);
+            }
+        }
 
         // Filtros
         if ($request->filled('marca')) {
@@ -331,42 +338,68 @@ class VehiculosController extends Controller
 
     public function eliminar($id, Request $request)
     {
-        if (!tienePermiso('vehiculo - desactivar') || !Session::has('usuario')) {
-            return appRedirectToHome('No cuenta con los permisos necesarios');
+        if (!esSuperAdmin() || !Session::has('usuario')) {
+            return appRedirectToHome('Acción exclusiva del Super Administrador.');
         }
 
         $request->validate([
-            'archivo_respaldo' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'comentario' => 'nullable|string|max:500',
+            'archivo_respaldo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
         try {
             $vehiculo = Vehiculo::findOrFail($id);
-            $vehiculo->eliminado = 1; // Marcar como eliminado
+            $vehiculo->eliminado = 1; // Marcar como inactivo / dado de baja
             $vehiculo->save();
 
-            $archivo = $request->file('archivo_respaldo');
-            $archivo = $request->file('archivo_respaldo');
-            $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
-
-            // Mover directamente a public/respaldos/vehiculo
-            $archivo->move(public_path('respaldos/vehiculo'), $nombreArchivo);
-
-            // Ruta accesible públicamente
-            $ruta = asset('respaldos/vehiculo/' . $nombreArchivo);
+            $ruta = null;
+            if ($request->hasFile('archivo_respaldo')) {
+                $archivo = $request->file('archivo_respaldo');
+                $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
+                $archivo->move(public_path('respaldos/vehiculo'), $nombreArchivo);
+                $ruta = asset('respaldos/vehiculo/' . $nombreArchivo);
+            }
 
             Movimiento::create([
                 'id_user' => session('usuario')->id,
                 'id_producto' => $vehiculo->id,
                 'categoria' => 'vehiculo',
-                'accion' => 'Eliminación',
-                'comentario' => 'Vehículo eliminado',
+                'accion' => 'Baja de vehículo',
+                'comentario' => $request->filled('comentario') ? $request->comentario : 'Vehículo dado de baja (Inactivo)',
                 'documentacion' => $ruta,
             ]);
 
-            return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado correctamente');
+            return redirect()->route('vehiculos.index')->with('success', 'Vehículo dado de baja correctamente. Ahora figura como inactivo.');
         } catch (\Exception $e) {
-            Log::error('Error al eliminar vehículo: ' . $e->getMessage());
-            return redirect()->back()->withErrors('Error al eliminar el vehículo');
+            Log::error('Error al dar de baja vehículo: ' . $e->getMessage());
+            return redirect()->back()->withErrors('Error al dar de baja el vehículo');
+        }
+    }
+
+    public function reactivar($id)
+    {
+        if (!esSuperAdmin() || !Session::has('usuario')) {
+            return appRedirectToHome('Acción exclusiva del Super Administrador.');
+        }
+
+        try {
+            $vehiculo = Vehiculo::findOrFail($id);
+            $vehiculo->eliminado = 0; // Reactivar vehículo
+            $vehiculo->save();
+
+            Movimiento::create([
+                'id_user' => session('usuario')->id,
+                'id_producto' => $vehiculo->id,
+                'categoria' => 'vehiculo',
+                'accion' => 'Reactivación de vehículo',
+                'comentario' => 'Vehículo reactivado a estado activo por Super Administrador',
+                'documentacion' => null,
+            ]);
+
+            return redirect()->back()->with('success', 'Vehículo reactivado correctamente.');
+        } catch (\Exception $e) {
+            Log::error('Error al reactivar vehículo: ' . $e->getMessage());
+            return redirect()->back()->withErrors('Error al reactivar el vehículo');
         }
     }
 }

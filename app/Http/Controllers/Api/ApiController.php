@@ -527,12 +527,21 @@ class ApiController extends Controller
                 ->select(
                     'vehiculos.*',
                     'ubicacion.nombre as ubicacion_nombre',
-                    DB::raw("CONCAT(u.nombre, ' ', u.apellido) as responsable_nombre")
+                    DB::raw("CONCAT(u.nombre, ' ', u.apellido) as responsable_nombre"),
+                    DB::raw("IF(vehiculos.eliminado = 0, 'activo', 'inactivo') as estado")
                 )
                 ->join('ubicacion', 'vehiculos.ubicacion_id', '=', 'ubicacion.id')
                 ->join('usuario as u', 'vehiculos.responsable', '=', 'u.id')
-                ->where('vehiculos.eliminado', 0)
                 ->whereIn('vehiculos.ubicacion_id', $ubicacionesPermitidas);
+
+            // Filtro de estado
+            if ($request->filled('estado')) {
+                if ($request->estado === 'activo') {
+                    $query->where('vehiculos.eliminado', 0);
+                } elseif ($request->estado === 'inactivo') {
+                    $query->where('vehiculos.eliminado', 1);
+                }
+            }
 
             // Filtros
             if ($request->filled('marca'))     $query->where('vehiculos.marca', 'like', '%' . $request->marca . '%');
@@ -561,7 +570,6 @@ class ApiController extends Controller
 
         try {
             $vehiculo = Vehiculo::with(['ubicacion', 'usuarioResponsable', 'especificaciones', 'documentaciones'])
-                ->where('eliminado', 0)
                 ->find($id);
 
             if (!$vehiculo) {

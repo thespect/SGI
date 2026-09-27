@@ -5,9 +5,20 @@
 <div class="rounded-4 p-3 p-md-4 mb-4 shadow-sm" style="background: linear-gradient(135deg,rgb(203, 85, 55) 0%,rgb(220, 147, 73) 100%);">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center text-white gap-3">
         <div class="flex-grow-1">
-            <h1 class="display-5 fw-bold mb-2">
-                {{ $vehiculo?->marca . ' ' . $vehiculo?->modelo ?? 'Vehículo no. ' . $vehiculo->id }}
-            </h1>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="display-5 fw-bold mb-2">
+                    {{ $vehiculo?->marca . ' ' . $vehiculo?->modelo ?? 'Vehículo no. ' . $vehiculo->id }}
+                </h1>
+                @if($vehiculo->eliminado)
+                    <span class="badge bg-dark bg-opacity-50 border border-white text-white rounded-pill px-3 py-1 fs-6 mb-2">
+                        <i class="fas fa-ban me-1 text-warning"></i> Inactivo (Dado de baja)
+                    </span>
+                @else
+                    <span class="badge bg-success bg-opacity-75 rounded-pill px-3 py-1 fs-6 mb-2">
+                        <i class="fas fa-check me-1"></i> Activo
+                    </span>
+                @endif
+            </div>
             <p class="opacity-75 mb-0">Detalles completos del vehículo</p>
         </div>
             <a href="{{ route('vehiculos.generarVale', $vehiculo->id) }}" 
@@ -29,25 +40,25 @@
                 data-bs-target="#modalAgregarMantenimiento">
                 <i class="fas fa-tools me-2"></i> Agregar Mantenimiento
             </button>
-            @else
-            <button class="btn btn-secondary" disabled>
-                <i class="fas fa-edit me-2"></i>Editar Vehículo
-            </button>
             @endif
 
-            @if(tienePermiso('vehiculo - desactivar') && !$vehiculo->eliminado)
-            <button type="button"
-                class="btn btn-danger btn-eliminar"
-                data-id="{{ $vehiculo->id }}"
-                data-nombre="{{ $vehiculo->nombre ?? $vehiculo->placa }}"
-                data-bs-toggle="modal"
-                data-bs-target="#modalConfirmarEliminacion">
-                <i class="fas fa-trash-alt me-2"></i>Eliminar Vehículo
-            </button>
-            @else
-            <button class="btn btn-secondary" disabled>
-                <i class="fas fa-trash-alt me-2"></i>Eliminar Vehículo
-            </button>
+            @if(esSuperAdmin())
+                @if(!$vehiculo->eliminado)
+                <button type="button"
+                    class="btn btn-danger btn-eliminar rounded-pill px-3 shadow-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalConfirmarEliminacion">
+                    <i class="fas fa-ban me-1"></i> Dar de Baja Vehículo
+                </button>
+                @else
+                <form action="{{ route('vehiculos.reactivar', $vehiculo->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" class="btn btn-success rounded-pill px-3 shadow-sm text-white" onclick="return confirm('¿Deseas reactivar este vehículo a estado activo?');">
+                        <i class="fas fa-check-circle me-1"></i> Reactivar Vehículo
+                    </button>
+                </form>
+                @endif
             @endif
         </div>
     </div>
