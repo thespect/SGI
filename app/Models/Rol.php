@@ -10,6 +10,17 @@ class Rol extends Model
     protected $fillable = ['nombre', 'status', 'eliminado'];
     public $timestamps = false;
 
+    /**
+     * Ordenar los roles por su jerarquía de importancia definida:
+     * 1. Super Admin, 2. Administrador, 3. Almacenistas, 4. Auxiliares
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('jerarquia', function ($builder) {
+            $builder->orderByRaw("FIELD(nombre, 'Super Admin', 'Administrador', 'Admin', 'Almacenistas', 'Auxiliares'), id ASC");
+        });
+    }
+
     public function usuarios()
     {
         return $this->hasMany(Usuario::class, 'id_rol');

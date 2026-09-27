@@ -10,6 +10,17 @@ if (!function_exists('esSuperAdmin')) {
     }
 }
 
+if (!function_exists('esAdmin')) {
+    function esAdmin(): bool
+    {
+        if (esSuperAdmin()) {
+            return true;
+        }
+        $usuario = Session::get('usuario');
+        return $usuario && (int)($usuario->id_rol ?? 0) === 4;
+    }
+}
+
 function tienePermiso(string $nombrePermiso): bool
 {
     if (esSuperAdmin()) {
@@ -102,3 +113,31 @@ if (!function_exists('appRedirectToHome')) {
         return $response;
     }
 }
+
+if (!function_exists('obtenerConsumiblesCriticos')) {
+    function obtenerConsumiblesCriticos()
+    {
+        return \Illuminate\Support\Facades\Cache::remember('consumibles_criticos_nav', 60, function() {
+            return \Illuminate\Support\Facades\DB::table('productos_consumibles as pc')
+                ->join('productos as p', 'pc.producto_id', '=', 'p.id')
+                ->leftJoin('ubicacion as u', 'p.ubicacion_id', '=', 'u.id')
+                ->select('pc.id as consumible_id', 'p.nombre', 'pc.existencia', 'u.nombre as ubicacion_nombre')
+                ->where('pc.existencia', '<=', 10)
+                ->orderBy('pc.existencia', 'asc')
+                ->limit(10)
+                ->get();
+        });
+    }
+}
+
+if (!function_exists('contarConsumiblesCriticos')) {
+    function contarConsumiblesCriticos()
+    {
+        return \Illuminate\Support\Facades\Cache::remember('count_consumibles_criticos', 60, function() {
+            return \Illuminate\Support\Facades\DB::table('productos_consumibles')
+                ->where('existencia', '<=', 10)
+                ->count();
+        });
+    }
+}
+

@@ -20,8 +20,8 @@
         </div>
     </div>
 
-    @if(esSuperAdmin())
-    <!-- Bento Grid Estadísticas (Solo Super Administradores) -->
+    @if(esSuperAdmin() || tienePermiso('leerUsuarios'))
+    <!-- Bento Grid Estadísticas (Super Admin y Administrador) -->
     <div class="bento-grid">
         <!-- Registros -->
         <div class="bento-card primary animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
@@ -71,6 +71,111 @@
                 <div class="d-none d-md-block" style="padding-right: 20px;">
                     <i class="fas fa-cubes" style="font-size: 8rem; color: var(--info-bg); transform: rotate(-10deg);"></i>
                 </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Card de Notificaciones/Alertas de Consumibles al 10% (Críticos y Faltantes) --}}
+    @if(isset($consumiblesCriticos) && (esSuperAdmin() || tienePermiso('consumible - leer')))
+    <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.15s;">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden {{ $totalConsumiblesCriticos > 0 ? 'border-start border-danger border-4' : 'border-start border-success border-4' }}" style="background: var(--card-bg, #fff);">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle p-3 {{ $totalConsumiblesCriticos > 0 ? 'bg-danger bg-opacity-10 text-danger' : 'bg-success bg-opacity-10 text-success' }}" style="width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            <i class="fas {{ $totalConsumiblesCriticos > 0 ? 'fa-exclamation-triangle' : 'fa-check-circle' }}"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <h4 class="fw-bold mb-0 text-dark">Alerta de Consumibles Críticos (Stock ≤ 10%)</h4>
+                                @if($totalConsumiblesCriticos > 0)
+                                <span class="badge bg-danger rounded-pill px-3 py-1">{{ $totalConsumiblesCriticos }} productos requieren atención</span>
+                                @else
+                                <span class="badge bg-success rounded-pill px-3 py-1">Stock saludable</span>
+                                @endif
+                            </div>
+                            <p class="text-muted small mb-0 mt-1">Monitoreo automático de insumos agotados o con existencias mínimas para compra y reabastecimiento.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs" onclick="activarPushNotificaciones()">
+                            <i class="fas fa-bell me-1"></i> Activar Notificaciones Push
+                        </button>
+                        @if (tienePermiso('consumible - leer'))
+                        <a href="{{ route('productos_consumibles.index') }}" class="btn btn-sm btn-danger rounded-pill px-3 shadow-xs">
+                            <i class="fas fa-boxes me-1"></i> Gestionar Consumibles
+                        </a>
+                        @endif
+                    </div>
+                </div>
+
+                @if($totalConsumiblesCriticos > 0)
+                <!-- Indicadores Rápidos -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="p-2 rounded-3 bg-light d-flex align-items-center justify-content-between">
+                            <span class="text-muted small"><i class="fas fa-ban text-danger me-1"></i> Completamente Agotados:</span>
+                            <span class="badge bg-danger fw-bold fs-6">{{ $consumiblesAgotados }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="p-2 rounded-3 bg-light d-flex align-items-center justify-content-between">
+                            <span class="text-muted small"><i class="fas fa-battery-quarter text-warning me-1"></i> Por Agotarse (1 a 10):</span>
+                            <span class="badge bg-warning text-dark fw-bold fs-6">{{ $consumiblesPorAgotar }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grilla de Productos Faltantes / Críticos -->
+                <div class="row g-3">
+                    @foreach($consumiblesCriticos->take(6) as $item)
+                    <div class="col-lg-4 col-md-6">
+                        <div class="border rounded-3 p-3 bg-light bg-opacity-50 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold mb-0 text-dark text-truncate me-2" title="{{ $item->nombre }}">
+                                        {{ $item->nombre }}
+                                    </h6>
+                                    @if($item->existencia <= 0)
+                                        <span class="badge bg-danger px-2 py-1 rounded-pill">0 unidades</span>
+                                    @else
+                                        <span class="badge bg-warning text-dark px-2 py-1 rounded-pill">{{ $item->existencia }} rest.</span>
+                                    @endif
+                                </div>
+                                <small class="text-muted d-block mb-2">
+                                    <i class="fas fa-map-marker-alt me-1 text-danger"></i> {{ $item->ubicacion_nombre ?? 'Almacén General' }}
+                                </small>
+                            </div>
+                            
+                            <div>
+                                @php
+                                    $porcentaje = min(100, max(0, ($item->existencia / 20) * 100));
+                                    $colorBarra = $item->existencia <= 0 ? 'bg-danger' : 'bg-warning';
+                                @endphp
+                                <div class="progress" style="height: 6px;" title="Nivel de stock estimado">
+                                    <div class="progress-bar {{ $colorBarra }}" role="progressbar" style="width: {{ $porcentaje }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                @if($totalConsumiblesCriticos > 6)
+                <div class="text-center mt-3 pt-2 border-top">
+                    <a href="{{ route('productos_consumibles.index') }}" class="text-decoration-none fw-semibold small text-danger">
+                        Ver los {{ $totalConsumiblesCriticos - 6 }} consumibles críticos restantes <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                @endif
+
+                @else
+                <div class="alert alert-success border-0 bg-success bg-opacity-10 d-flex align-items-center mb-0 mt-2 py-2">
+                    <i class="fas fa-check-circle text-success me-2 fs-5"></i>
+                    <span class="small text-success fw-medium">Excelente estado: todos los consumibles cuentan con existencias superiores al 10%.</span>
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -190,8 +295,8 @@
     </div>
 </div>
 
-@if(esSuperAdmin())
-<!--AJAX para obtener datos del dashboard (Solo Super Admin)  -->
+@if(esSuperAdmin() || tienePermiso('leerUsuarios'))
+<!--AJAX para obtener datos del dashboard (Super Admin y Administrador)  -->
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     try {

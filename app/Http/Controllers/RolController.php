@@ -13,13 +13,32 @@ class RolController extends Controller
 {
     public function index()
     {
-        if (!esSuperAdmin() || !tienePermiso('leerRol') || !Session::has('usuario')) {
+        if (!Session::has('usuario') || !tienePermiso('leerRol')) {
             return appRedirectToHome('No cuenta con los permisos necesarios');
         }
 
         try {
             $roles = Rol::where('eliminado', 1)->paginate(10);
-            return view('roles.index', compact('roles'));
+            $rolesTodos = Rol::where('eliminado', 1)->get();
+
+            $permisosVista = DB::table('vista_permisos')->get();
+            $permisosPorTipo = [];
+            foreach ($permisosVista as $p) {
+                if (!isset($permisosPorTipo[$p->tipo][$p->permiso_nombre])) {
+                    $permisosPorTipo[$p->tipo][$p->permiso_nombre] = [
+                        'nombre' => $p->permiso_nombre,
+                        'tipo' => $p->tipo,
+                        'empresa_ubicacion' => $p->empresa_ubicacion,
+                        'roles' => []
+                    ];
+                }
+                $permisosPorTipo[$p->tipo][$p->permiso_nombre]['roles'][$p->rol] = [
+                    'id' => $p->id,
+                    'otorgado' => $p->permiso_otorgado === 'activo'
+                ];
+            }
+
+            return view('roles.index', compact('roles', 'rolesTodos', 'permisosPorTipo'));
         } catch (\Exception $e) {
             Log::error('Error al obtener los roles: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error al obtener los roles.');

@@ -406,12 +406,15 @@ class ConsumibleController extends Controller
 
             $pcv->update(['existencia' => $ajuste]);
 
+            $accionLog = $request->tipo === 'disminuir' ? 'Consumo' : 'Reabastecimiento';
+            $detalleLog = ($request->tipo === 'disminuir' ? "Consumo de {$request->cantidad} unidades. " : "Reabastecimiento de {$request->cantidad} unidades. ") . ($request->comentario ?? '');
+
             Movimiento::create([
                 'id_user' => session('usuario')->id,
                 'id_producto' => $pcv->id,
                 'categoria' => 'consumibles',
-                'accion' => ucfirst($request->tipo) . ' existencia',
-                'comentario' => $request->comentario,
+                'accion' => $accionLog,
+                'comentario' => $detalleLog,
             ]);
 
             $this->notificacion($id);

@@ -15,7 +15,7 @@ class UsuarioController extends Controller
 {
     public function index(Request $request)
     {
-        if (!esSuperAdmin() || !tienePermiso('leerUsuarios') || !Session::has('usuario')) {
+        if (!Session::has('usuario') || !tienePermiso('leerUsuarios')) {
             return appRedirectToHome('No tienes permiso para ver los usuarios.');
         }
 
@@ -59,7 +59,7 @@ class UsuarioController extends Controller
 
     public function insertar(Request $request)
     {
-        if (!esSuperAdmin() || !tienePermiso('insertarUsuarios') || !Session::has('usuario')) {
+        if (!Session::has('usuario') || !tienePermiso('insertarUsuarios')) {
             return appRedirectToHome('No tienes permiso para crear usuarios.');
         }
 
@@ -90,7 +90,7 @@ class UsuarioController extends Controller
 
     public function ver($id)
     {
-        if (!esSuperAdmin() || !tienePermiso('leerUsuarios') || !Session::has('usuario')) {
+        if (!Session::has('usuario') || !tienePermiso('leerUsuarios')) {
             return appRedirectToHome('No tienes permiso para ver los usuarios.');
         }
 
@@ -105,7 +105,7 @@ class UsuarioController extends Controller
                 ->paginate(10);
 
             $roles = Rol::where('eliminado', 1)
-                ->where('id', '!=', 1) // Excluir el rol de administrador
+                ->where('id', '!=', 1) // Excluir el rol de Super Admin
                 ->get();
 
             return view('usuarios.ver', compact('usuario', 'movimientos', 'productosACargo', 'roles'));
@@ -117,7 +117,7 @@ class UsuarioController extends Controller
 
     public function actualizar($id, Request $request)
     {
-        if (!esSuperAdmin() || !tienePermiso('modificarUsuarios') || !Session::has('usuario')) {
+        if (!Session::has('usuario') || !tienePermiso('modificarUsuarios')) {
             return appRedirectToHome('No tienes permiso para actualizar usuarios.');
         }
 
@@ -130,6 +130,11 @@ class UsuarioController extends Controller
 
         try {
             $usuario = Usuario::findOrFail($id);
+
+            // Proteger al Super Admin de ser modificado por usuarios que no sean Super Admin
+            if ($usuario->id_rol == 1 && !esSuperAdmin()) {
+                return redirect()->back()->with('error', 'No tienes permisos para modificar a un Super Administrador.');
+            }
 
             $usuario->estado = $request->estado;
             $usuario->gmail = $request->gmail;
@@ -150,12 +155,18 @@ class UsuarioController extends Controller
 
     public function eliminar($id)
     {
-        if (!esSuperAdmin() || !tienePermiso('desactivarUsuarios') || !Session::has('usuario')) {
+        if (!Session::has('usuario') || !tienePermiso('desactivarUsuarios')) {
             return appRedirectToHome('No tienes permiso para eliminar usuarios.');
         }
 
         try {
             $usuario = Usuario::findOrFail($id);
+
+            // Proteger al Super Admin de ser eliminado
+            if ($usuario->id_rol == 1) {
+                return redirect()->back()->with('error', 'No se puede eliminar a un Super Administrador.');
+            }
+
             $usuario->eliminado = 0; // Marcar como eliminado
             $usuario->save();
 

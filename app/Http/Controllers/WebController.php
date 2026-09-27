@@ -106,9 +106,36 @@ class WebController extends Controller
 
             $registros7Dias = Movimiento::registrosUltimos7Dias();
             $movimientos7Dias = Movimiento::totalMovimientosUltimos7Dias();
-            $usuariosActivos = esSuperAdmin() ? Usuario::totalActivosNoEliminados() : 0;
+            $usuariosActivos = (esSuperAdmin() || tienePermiso('leerUsuarios')) ? Usuario::totalActivosNoEliminados() : 0;
             
-            return view('web.home', compact('registros7Dias', 'movimientos7Dias', 'usuariosActivos'));
+            // Consumibles con stock bajo / crítico (≤ 10% / ≤ 10 unidades)
+            $consumiblesCriticos = \Illuminate\Support\Facades\DB::table('productos_consumibles as pc')
+                ->join('productos as p', 'pc.producto_id', '=', 'p.id')
+                ->leftJoin('ubicacion as u', 'p.ubicacion_id', '=', 'u.id')
+                ->select(
+                    'pc.id as consumible_id',
+                    'p.id as producto_id',
+                    'p.nombre',
+                    'pc.existencia',
+                    'u.nombre as ubicacion_nombre'
+                )
+                ->where('pc.existencia', '<=', 10)
+                ->orderBy('pc.existencia', 'asc')
+                ->get();
+
+            $totalConsumiblesCriticos = $consumiblesCriticos->count();
+            $consumiblesAgotados = $consumiblesCriticos->where('existencia', '<=', 0)->count();
+            $consumiblesPorAgotar = $consumiblesCriticos->where('existencia', '>', 0)->count();
+
+            return view('web.home', compact(
+                'registros7Dias', 
+                'movimientos7Dias', 
+                'usuariosActivos',
+                'consumiblesCriticos',
+                'totalConsumiblesCriticos',
+                'consumiblesAgotados',
+                'consumiblesPorAgotar'
+            ));
 
         } catch (\Throwable $e) {
             // Si hay error en los modelos (por nombres de tablas), lo arroja aquí

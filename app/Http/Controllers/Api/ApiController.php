@@ -104,7 +104,7 @@ class ApiController extends Controller
                 ];
             });
 
-            if (!esSuperAdmin()) {
+            if (!esSuperAdmin() && !tienePermiso('leerUsuarios')) {
                 unset($stats['usuarios_activos']);
             }
 
@@ -619,8 +619,8 @@ class ApiController extends Controller
      */
     public function usuarios(Request $request): JsonResponse
     {
-        if (!esSuperAdmin()) {
-            return $this->error('Acceso denegado. Solo super administradores pueden ver usuarios.', 403);
+        if (!esSuperAdmin() && !tienePermiso('leerUsuarios')) {
+            return $this->error('Acceso denegado. Se requieren permisos de administración para ver usuarios.', 403);
         }
 
         try {

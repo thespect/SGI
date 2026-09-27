@@ -98,6 +98,11 @@ Breadcrumbs::for('vehiculos.ver', function (BreadcrumbTrail $trail, $id) {
     $trail->push('Ver Vehículo', route('vehiculos.ver', $id));
 });
 
+Breadcrumbs::for('mantenimientos.dashboard', function (BreadcrumbTrail $trail) {
+    $trail->parent('vehiculos.index');
+    $trail->push('Dashboard de Mantenimientos', route('mantenimientos.dashboard'));
+});
+
 // ========================== PRODUCTOS FIJOS ==========================
 
 Breadcrumbs::for('productos.indexFijos', function (BreadcrumbTrail $trail) {
@@ -140,4 +145,12 @@ Breadcrumbs::for('productos', function ($trail) {
     $trail->parent('web.home');
     $trail->push('Productos', route('productos'));
 });
+
+// ========================== LOGS Y AUDITORIA ==========================
+
+Breadcrumbs::for('movimientos.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('web.home');
+    $trail->push('Historial de Logs y Auditoría', route('movimientos.index'));
+});
+
 

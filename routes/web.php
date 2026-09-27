@@ -17,6 +17,8 @@ use App\Http\Controllers\{
     ExportExcelController,
     ImportExcelController,
     PlantillasController,
+    MovimientoController,
+    MantenimientoDashboardController,
 };
 use Illuminate\Support\Facades\Mail;
 
@@ -62,6 +64,8 @@ Route::controller(RolController::class)->prefix('roles')->group(function () {
 // Permisos
 Route::controller(PermisosController::class)->prefix('permisos')->group(function () {
     Route::post('/actualizar', 'actualizarPermisos')->name('permisos.actualizar');
+    Route::post('/actualizar-matriz', 'actualizarMatriz')->name('permisos.actualizarMatriz');
+    Route::post('/toggle-ajax', 'togglePermisoAjax')->name('permisos.toggleAjax');
 });
 
 //usuarios
@@ -76,6 +80,9 @@ Route::controller(UsuarioController::class)->prefix('usuarios')->group(function 
     Route::get('/perfil', 'perfil')->name('usuarios.perfil');
     Route::put('/perfil/actualizar', 'actualizarPerfil')->name('usuarios.actualizarPerfil');
 });
+
+// Logs y Auditoría
+Route::get('/logs', [MovimientoController::class, 'index'])->name('movimientos.index');
 
 // Etiquetas
 Route::controller(EtiquetasController::class)->prefix('etiquetas')->group(function () {
@@ -100,6 +107,12 @@ Route::controller(VehiculosController::class)->prefix('vehiculos')->group(functi
     Route::put('/{id}/eliminar', 'eliminar')->name('vehiculos.eliminar');
     Route::post('/documentacion/crear/{id}', 'insertarDocumentacion')->name('vehiculos.documentacion.insertar');
     Route::post('/mantenimiento/crear/{id}', 'insertarMantenimiento')->name('vehiculos.mantenimiento.insertar');
+});
+
+// Dashboard de Mantenimientos
+Route::controller(MantenimientoDashboardController::class)->prefix('mantenimientos')->group(function () {
+    Route::get('/', 'index')->name('mantenimientos.dashboard');
+    Route::post('/crear', 'store')->name('mantenimientos.store');
 });
 
 // Activos Fijos

@@ -15,6 +15,13 @@
         $isSelected = $selectedRoleId == $role->id;
         $statusClass = $isActive ? 'active-role' : 'inactive-role';
         $selectedClass = $isSelected ? 'selected-role' : '';
+        $roleIcon = match(strtolower($role->nombre)) {
+            'super admin' => 'bi-shield-shaded',
+            'administrador', 'admin' => 'bi-person-gear',
+            'almacenistas', 'almacenista' => 'bi-boxes',
+            'auxiliares', 'auxiliar' => 'bi-person-badge',
+            default => 'bi-person-badge'
+        };
         @endphp
 
         <button
@@ -23,7 +30,7 @@
                    {{ $statusClass }} {{ $selectedClass }}"
             aria-current="{{ $isSelected ? 'true' : 'false' }}">
             <span class="role-name">
-                <i class="bi bi-person-badge me-2"></i>
+                <i class="bi {{ $roleIcon }} me-2"></i>
                 {{ $role->nombre }}
                 @if(!$isActive)
                 <small class="ms-2">(Inactivo)</small>

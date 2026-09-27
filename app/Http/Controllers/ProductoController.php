@@ -724,11 +724,13 @@ public function indexFijos(Request $request)
 
             $productoFijo->save();
 
+            $accionLog = $request->estado === 'baja' ? 'Baja de producto' : 'Actualización de información';
+
             Movimiento::create([
                 'id_user' => session('usuario')->id,
                 'id_producto' => $productoFijo->id,
                 'categoria' => 'fijos',
-                'accion' => 'Actualización de información',
+                'accion' => $accionLog,
                 'comentario' => $request->comentario,
                 'documentacion' => $documento ?? null
             ]);
