@@ -106,8 +106,8 @@
                         <button type="button" class="btn btn-sm btn-outline-dark" id="escanerBtnPrint">
                             <i class="fas fa-print me-1"></i> Imprimir Etiqueta
                         </button>
-                        <a href="#" target="_blank" class="btn btn-sm btn-outline-success d-none" id="escanerBtnVale">
-                            <i class="fas fa-file-signature me-1"></i> Carta Responsiva
+                        <a href="#" class="btn btn-sm btn-outline-primary d-none" id="escanerBtnVale">
+                            <i class="fas fa-file-word me-1"></i> Vale de Salida
                         </a>
                         <a href="#" class="btn btn-sm btn-primary px-3" id="escanerBtnVer">
                             <i class="fas fa-arrow-right me-1"></i> Ver Detalle Completo

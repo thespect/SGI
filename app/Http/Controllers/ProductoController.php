@@ -868,7 +868,14 @@ public function indexFijos(Request $request)
 
     public function generarValeSalida($id)
     {
-        if (!tienePermiso('fijos - leer') || !Session::has('usuario')) {
+        if (!Session::has('usuario')) {
+            return appRedirectToHome('No cuenta con los permisos necesarios');
+        }
+
+        $userId = Session::get('usuario')->id ?? null;
+        $esResponsable = $userId ? ProductoFijo::where('id', $id)->where('responsable', $userId)->exists() : false;
+
+        if (!tienePermiso('fijos - leer') && !esSuperAdmin() && !$esResponsable) {
             return appRedirectToHome('No cuenta con los permisos necesarios');
         }
 

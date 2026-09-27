@@ -185,7 +185,14 @@ class VehiculosController extends Controller
 
     public function generarValeSalida($id)
     {
-        if (!tienePermiso('vehiculo - leer') || !Session::has('usuario')) {
+        if (!Session::has('usuario')) {
+            return appRedirectToHome('No cuenta con los permisos necesarios');
+        }
+
+        $userId = Session::get('usuario')->id ?? null;
+        $esResponsable = $userId ? Vehiculo::where('id', $id)->where('responsable', $userId)->exists() : false;
+
+        if (!tienePermiso('vehiculo - leer') && !esSuperAdmin() && !$esResponsable) {
             return appRedirectToHome('No cuenta con los permisos necesarios');
         }
 

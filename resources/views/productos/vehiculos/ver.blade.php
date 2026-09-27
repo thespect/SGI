@@ -10,40 +10,9 @@
             </h1>
             <p class="opacity-75 mb-0">Detalles completos del vehículo</p>
         </div>
-            <div class="btn-group shadow-sm">
-                <a href="{{ route('responsivas.vehiculo', ['id' => $vehiculo->id, 'formato' => 'pdf']) }}" target="_blank" class="btn btn-success text-white">
-                    <i class="fas fa-file-signature me-1"></i> Carta Responsiva
-                </a>
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split text-white" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="visually-hidden">Opciones</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow">
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('responsivas.vehiculo', ['id' => $vehiculo->id, 'formato' => 'pdf']) }}" target="_blank">
-                            <span class="badge bg-danger bg-opacity-10 text-danger me-2"><i class="fas fa-file-pdf"></i></span>
-                            <div>
-                                <span class="d-block fw-semibold">Ver / Imprimir PDF</span>
-                                <small class="text-muted" style="font-size: 0.72rem;">Con membrete y firmas</small>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('responsivas.vehiculo', ['id' => $vehiculo->id, 'formato' => 'word']) }}">
-                            <span class="badge bg-primary bg-opacity-10 text-primary me-2"><i class="fas fa-file-word"></i></span>
-                            <div>
-                                <span class="d-block fw-semibold">Descargar Word (.docx)</span>
-                                <small class="text-muted" style="font-size: 0.72rem;">Editable con cláusulas legales</small>
-                            </div>
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item text-muted small" href="{{ route('vehiculos.generarVale', $vehiculo->id) }}">
-                            <i class="fas fa-file-alt me-2"></i> Vale de Salida anterior (Word)
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <a href="{{ route('vehiculos.generarVale', $vehiculo->id) }}" class="btn btn-primary text-white shadow-sm">
+                <i class="fas fa-file-word me-1"></i> Generar Vale de Salida
+            </a>
             @if(tienePermiso('vehiculo - modificar') && !$vehiculo->eliminado)
             <button type="button"
                 class="btn btn-primary"

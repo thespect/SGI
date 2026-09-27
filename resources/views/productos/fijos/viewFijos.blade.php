@@ -38,41 +38,10 @@ $etiquetasUnicas = \App\Models\Etiqueta::obtenerEtiquetasActivas(); // Suponiend
                     <i class="fas fa-user-edit me-1"></i> <span class="d-none d-md-inline">Cambiar responsable</span>
                 </button>
 
-                <!-- Botón Carta Responsiva / Carta Poder -->
-                <div class="btn-group shadow-sm flex-grow-1 flex-md-grow-0">
-                    <a href="{{ route('responsivas.fijo', ['id' => $productoFijo->id, 'formato' => 'pdf']) }}" target="_blank" class="btn btn-success btn-sm rounded-start-pill px-3 text-white">
-                        <i class="fas fa-file-signature me-1"></i> <span class="d-none d-md-inline">Carta Responsiva</span>
-                    </a>
-                    <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split rounded-end-pill px-2 text-white" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">Opciones de responsiva</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('responsivas.fijo', ['id' => $productoFijo->id, 'formato' => 'pdf']) }}" target="_blank">
-                                <span class="badge bg-danger bg-opacity-10 text-danger me-2"><i class="fas fa-file-pdf"></i></span>
-                                <div>
-                                    <span class="d-block fw-semibold">Ver / Imprimir PDF</span>
-                                    <small class="text-muted" style="font-size: 0.72rem;">Con membrete y códigos de barras</small>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('responsivas.fijo', ['id' => $productoFijo->id, 'formato' => 'word']) }}">
-                                <span class="badge bg-primary bg-opacity-10 text-primary me-2"><i class="fas fa-file-word"></i></span>
-                                <div>
-                                    <span class="d-block fw-semibold">Descargar Word (.docx)</span>
-                                    <small class="text-muted" style="font-size: 0.72rem;">Editable con cláusulas legales</small>
-                                </div>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-muted small" href="{{ route('productos.fijos.generarVale', $productoFijo->id) }}">
-                                <i class="fas fa-file-alt me-2"></i> Vale de Salida anterior (Word)
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <!-- Botón Vale de Salida -->
+                <a href="{{ route('productos.fijos.generarVale', $productoFijo->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 flex-grow-1 flex-md-grow-0">
+                    <i class="fas fa-file-word me-1"></i> <span class="d-none d-md-inline">Generar Vale de Salida</span>
+                </a>
                 @endif
             </div>
         </div>

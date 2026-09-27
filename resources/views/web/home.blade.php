@@ -194,7 +194,7 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <h4 class="fw-bold mb-0 text-dark">Cosas a mi Cargo</h4>
+                            <h4 class="fw-bold mb-0 text-dark">Artículos a mi Cargo</h4>
                             @if(($totalCosasACargo ?? 0) > 0)
                                 <span class="badge bg-primary rounded-pill px-3 py-1">{{ $totalCosasACargo }} bienes asignados</span>
                             @else
@@ -205,17 +205,6 @@
                     </div>
                 </div>
 
-                @if(($totalCosasACargo ?? 0) > 0 && session()->has('usuario'))
-                <div>
-                    <a href="{{ route('responsivas.responsable', session('usuario')->id) }}" 
-                       target="_blank" 
-                       class="btn btn-sm btn-outline-primary rounded-pill px-3 py-2 shadow-xs d-flex align-items-center gap-2"
-                       title="Descargar PDF de carta responsiva general de todos los bienes a mi cargo">
-                        <i class="fas fa-file-pdf text-danger"></i>
-                        <span class="fw-semibold">Descargar mi Responsiva General</span>
-                    </a>
-                </div>
-                @endif
             </div>
 
             <div class="card-body p-4">
@@ -314,11 +303,10 @@
 
                                         <!-- Acciones del Vehículo -->
                                         <div class="d-flex gap-2 pt-2 border-top mt-2">
-                                            <a href="{{ route('responsivas.vehiculo', $veh->id) }}" 
-                                               target="_blank" 
+                                            <a href="{{ route('vehiculos.generarVale', $veh->id) }}" 
                                                class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 py-1"
                                                style="font-size: 0.75rem;">
-                                                <i class="fas fa-file-pdf me-1"></i> Responsiva
+                                                <i class="fas fa-file-word me-1"></i> Vale de Salida
                                             </a>
                                             <a href="{{ route('vehiculos.ver', $veh->id) }}" 
                                                class="btn btn-light border btn-sm rounded-pill px-3 py-1"
@@ -375,11 +363,10 @@
                                             </div>
                                         </div>
                                         <div class="pt-2 border-top mt-2">
-                                            <a href="{{ route('responsivas.fijo', $fijo->id) }}" 
-                                               target="_blank" 
+                                            <a href="{{ route('productos.fijos.generarVale', $fijo->id) }}" 
                                                class="btn btn-outline-primary btn-sm rounded-pill w-100 py-1"
                                                style="font-size: 0.75rem;">
-                                                <i class="fas fa-file-pdf me-1"></i> Descargar Responsiva del Bien
+                                                <i class="fas fa-file-word me-1"></i> Vale de Salida
                                             </a>
                                         </div>
                                     </div>

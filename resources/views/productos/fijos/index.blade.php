@@ -316,9 +316,8 @@ function renderTablaFijos(data, meta) {
                 </td>
                 <td><span class="text-muted">${fecha}</span></td>
                 <td class="pe-4 text-end">
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="/responsivas/fijo/${p.id}" target="_blank" class="btn btn-sm btn-outline-info btn-float text-info" data-bs-toggle="tooltip" title="Generar Carta Responsiva (PDF)">
-                            <i class="fas fa-file-signature"></i>
+                        <a href="/productos-fijos/${p.id}/generar-vale" class="btn btn-sm btn-outline-primary btn-float" data-bs-toggle="tooltip" title="Generar Vale de Salida (Word)">
+                            <i class="fas fa-file-word"></i>
                         </a>
                         <button type="button" class="btn btn-sm btn-outline-dark btn-float" 
                                 onclick="abrirModalImprimirEtiqueta('${escapeHtmlFijo(p.nombre || '')}', '${escapeHtmlFijo(p.codigoBarra || p.clave || '')}', '${escapeHtmlFijo(p.empresa_nombre || 'SGI')}', '${escapeHtmlFijo(p.clave || '')}', '${p.precio !== null && p.precio !== undefined ? '$' + Number(p.precio).toFixed(2) : 'N/A'}', '${escapeHtmlFijo(p.ubicacion || '')}')" 

@@ -16,36 +16,7 @@
                     Total: {{ $usuario->numeroACargo() }}
                 </span>
             </div>
-            @if($usuario->numeroACargo() > 0)
-            <div class="btn-group shadow-sm">
-                <a href="{{ route('responsivas.responsable', ['id' => $usuario->id, 'formato' => 'pdf']) }}" target="_blank" class="btn btn-sm btn-success rounded-start-pill px-3 text-white">
-                    <i class="fas fa-file-signature me-1"></i> Carta Responsiva Consolidada
-                </a>
-                <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split rounded-end-pill px-2 text-white" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="visually-hidden">Opciones de responsiva</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow">
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('responsivas.responsable', ['id' => $usuario->id, 'formato' => 'pdf']) }}" target="_blank">
-                            <span class="badge bg-danger bg-opacity-10 text-danger me-2"><i class="fas fa-file-pdf"></i></span>
-                            <div>
-                                <span class="d-block fw-semibold">Ver / Imprimir PDF</span>
-                                <small class="text-muted" style="font-size: 0.72rem;">Documento formal para firma del empleado</small>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('responsivas.responsable', ['id' => $usuario->id, 'formato' => 'word']) }}">
-                            <span class="badge bg-primary bg-opacity-10 text-primary me-2"><i class="fas fa-file-word"></i></span>
-                            <div>
-                                <span class="d-block fw-semibold">Descargar Word (.docx)</span>
-                                <small class="text-muted" style="font-size: 0.72rem;">Editable con tabla de bienes asignados</small>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            @endif
+
         </div>
 
         <div class="card-body p-0">
@@ -76,11 +47,10 @@
                             </div>
                         </div>
                         <div class="text-end d-flex align-items-center gap-2">
-                            <a href="{{ route('responsivas.fijo', ['id' => $producto->id, 'formato' => 'pdf']) }}"
-                                target="_blank"
-                                class="btn btn-sm btn-outline-success rounded-pill px-2"
-                                title="Carta Responsiva de este activo">
-                                <i class="fas fa-file-signature"></i>
+                            <a href="{{ route('productos.fijos.generarVale', $producto->id) }}"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-2"
+                                title="Descargar Vale de Salida">
+                                <i class="fas fa-file-word"></i>
                             </a>
                             <a href="{{ $rutaDetalle($producto) }}"
                                 class="btn btn-sm btn-outline-primary rounded-pill px-3">
