@@ -181,6 +181,236 @@
     </div>
     @endif
 
+    {{-- ========================================================================= --}}
+    {{-- SECCIÓN: COSAS A MI CARGO (BIENES, VEHÍCULOS Y ACTIVOS BAJO RESGUARDO)   --}}
+    {{-- ========================================================================= --}}
+    <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.18s;" id="seccionCosasACargo">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: var(--card-bg, #fff);">
+            <!-- Header de la Sección -->
+            <div class="card-header bg-white border-bottom p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle p-3 bg-primary bg-opacity-10 text-primary" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <h4 class="fw-bold mb-0 text-dark">Cosas a mi Cargo</h4>
+                            @if(($totalCosasACargo ?? 0) > 0)
+                                <span class="badge bg-primary rounded-pill px-3 py-1">{{ $totalCosasACargo }} bienes asignados</span>
+                            @else
+                                <span class="badge bg-light text-muted border rounded-pill px-3 py-1">Sin bienes asignados</span>
+                            @endif
+                        </div>
+                        <p class="text-muted small mb-0 mt-1">Vehículos, equipo de cómputo y mobiliario bajo tu resguardo personal.</p>
+                    </div>
+                </div>
+
+                @if(($totalCosasACargo ?? 0) > 0 && session()->has('usuario'))
+                <div>
+                    <a href="{{ route('responsivas.responsable', session('usuario')->id) }}" 
+                       target="_blank" 
+                       class="btn btn-sm btn-outline-primary rounded-pill px-3 py-2 shadow-xs d-flex align-items-center gap-2"
+                       title="Descargar PDF de carta responsiva general de todos los bienes a mi cargo">
+                        <i class="fas fa-file-pdf text-danger"></i>
+                        <span class="fw-semibold">Descargar mi Responsiva General</span>
+                    </a>
+                </div>
+                @endif
+            </div>
+
+            <div class="card-body p-4">
+                @if(($totalCosasACargo ?? 0) > 0)
+                <!-- Pestañas de Navegación: Vehículos vs Activos Fijos -->
+                <ul class="nav nav-pills mb-4 gap-2" id="pillsCargoTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2 shadow-xs" 
+                                id="pills-vehiculos-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#pills-vehiculos" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="pills-vehiculos" 
+                                aria-selected="true">
+                            <i class="fas fa-car"></i>
+                            <span>Vehículos a mi Cargo</span>
+                            <span class="badge bg-primary text-white rounded-pill ms-1">{{ $misVehiculos->count() }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2 shadow-xs" 
+                                id="pills-fijos-tab" 
+                                data-bs-toggle="pill" 
+                                data-bs-target="#pills-fijos" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="pills-fijos" 
+                                aria-selected="false">
+                            <i class="fas fa-laptop"></i>
+                            <span>Mobiliario y Activos Fijos</span>
+                            <span class="badge bg-secondary text-white rounded-pill ms-1">{{ $misActivosFijos->count() }}</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Contenido de Pestañas -->
+                <div class="tab-content" id="pillsCargoTabContent">
+                    <!-- 1. VEHÍCULOS A MI CARGO -->
+                    <div class="tab-pane fade show active" id="pills-vehiculos" role="tabpanel" aria-labelledby="pills-vehiculos-tab">
+                        @if($misVehiculos->count() > 0)
+                        <div class="row g-3">
+                            @foreach($misVehiculos as $veh)
+                            <div class="col-lg-6 col-xl-4">
+                                <div class="card border rounded-3 h-100 shadow-xs overflow-hidden" style="background: #fafafa;">
+                                    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="fw-bold mb-0 text-dark">
+                                                <i class="fas fa-car text-primary me-1"></i> {{ $veh->marca }} {{ $veh->modelo }}
+                                            </h6>
+                                            <small class="text-muted">Año: {{ $veh->año ?? 'N/A' }}</small>
+                                        </div>
+                                        <span class="badge bg-dark text-white rounded-pill px-2 py-1 font-monospace" style="letter-spacing: 1px;">
+                                            {{ $veh->placas }}
+                                        </span>
+                                    </div>
+                                    <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                                        <div>
+                                            <div class="row g-2 small text-muted mb-2">
+                                                <div class="col-6">
+                                                    <strong>Color:</strong> {{ $veh->color ?? 'N/A' }}
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Transmisión:</strong> {{ $veh->transmision ?? 'N/A' }}
+                                                </div>
+                                                <div class="col-12">
+                                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                                    <strong>Ubicación:</strong> {{ $veh->ubicacion?->nombre ?? 'Sin ubicación' }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Estado del Mantenimiento -->
+                                            @if($veh->mantenimientos->count() > 0)
+                                                @php $ultimoM = $veh->mantenimientos->first(); @endphp
+                                                <div class="p-2 rounded bg-light border-start border-warning border-3 mb-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <strong class="text-dark small" style="font-size: 0.8rem;">
+                                                            <i class="fas fa-wrench text-warning me-1"></i> {{ $ultimoM->tipo_servicio }}
+                                                        </strong>
+                                                        <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">
+                                                            {{ \Carbon\Carbon::parse($ultimoM->fecha)->format('d/m/Y') }}
+                                                        </span>
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                                        {{ number_format($ultimoM->kilometraje) }} km en {{ $ultimoM->taller }}
+                                                    </small>
+                                                </div>
+                                            @else
+                                                <div class="p-2 rounded bg-light border-start border-info border-3 mb-2">
+                                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                                        <i class="fas fa-check-circle text-info me-1"></i> Sin mantenimientos registrados pendientes
+                                                    </small>
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <!-- Acciones del Vehículo -->
+                                        <div class="d-flex gap-2 pt-2 border-top mt-2">
+                                            <a href="{{ route('responsivas.vehiculo', $veh->id) }}" 
+                                               target="_blank" 
+                                               class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 py-1"
+                                               style="font-size: 0.75rem;">
+                                                <i class="fas fa-file-pdf me-1"></i> Responsiva
+                                            </a>
+                                            <a href="{{ route('vehiculos.ver', $veh->id) }}" 
+                                               class="btn btn-light border btn-sm rounded-pill px-3 py-1"
+                                               style="font-size: 0.75rem;" 
+                                               title="Ver detalles del vehículo">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-car-side fa-2x mb-2 opacity-50"></i>
+                            <p class="mb-0 small">No tienes vehículos asignados bajo tu custodia actualmente.</p>
+                        </div>
+                        @endif
+                    </div>
+
+                    <!-- 2. ACTIVOS FIJOS A MI CARGO -->
+                    <div class="tab-pane fade" id="pills-fijos" role="tabpanel" aria-labelledby="pills-fijos-tab">
+                        @if($misActivosFijos->count() > 0)
+                        <div class="row g-3">
+                            @foreach($misActivosFijos as $fijo)
+                            <div class="col-lg-6 col-xl-4">
+                                <div class="card border rounded-3 h-100 shadow-xs overflow-hidden" style="background: #fafafa;">
+                                    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+                                        <h6 class="fw-bold mb-0 text-dark text-truncate me-2" title="{{ $fijo->producto?->nombre }}">
+                                            <i class="fas fa-archive text-secondary me-1"></i> {{ $fijo->producto?->nombre ?? 'Activo Fijo' }}
+                                        </h6>
+                                        <span class="badge bg-secondary rounded-pill px-2 py-1 font-monospace" style="font-size: 0.7rem;">
+                                            {{ $fijo->clave }}
+                                        </span>
+                                    </div>
+                                    <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                                        <div class="small text-muted mb-2">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                                <span class="text-truncate"><strong>Ubicación:</strong> {{ $fijo->producto?->ubicacion?->nombre ?? 'Sin asignar' }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <i class="fas fa-building text-primary me-1"></i>
+                                                <span class="text-truncate"><strong>Empresa:</strong> {{ $fijo->producto?->empresa?->nombre ?? 'Grupo Nodo' }}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">
+                                                    Estado: {{ ucfirst($fijo->estado ?? 'Activo') }}
+                                                </span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">
+                                                    {{ $fijo->fechaEntrada ? 'Asignado: ' . \Carbon\Carbon::parse($fijo->fechaEntrada)->format('d/m/Y') : '' }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="pt-2 border-top mt-2">
+                                            <a href="{{ route('responsivas.fijo', $fijo->id) }}" 
+                                               target="_blank" 
+                                               class="btn btn-outline-primary btn-sm rounded-pill w-100 py-1"
+                                               style="font-size: 0.75rem;">
+                                                <i class="fas fa-file-pdf me-1"></i> Descargar Responsiva del Bien
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-boxes fa-2x mb-2 opacity-50"></i>
+                            <p class="mb-0 small">No tienes mobiliario ni equipo de cómputo asignado bajo tu custodia actualmente.</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @else
+                <!-- Estado Vacío Cuando el Usuario no Tiene Bienes Asignados -->
+                <div class="text-center py-4">
+                    <div class="rounded-circle bg-light p-3 d-inline-flex align-items-center justify-content-center mb-2" style="width: 64px; height: 64px;">
+                        <i class="fas fa-shield-alt text-muted fa-2x"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1">Sin bienes asignados a tu resguardo</h6>
+                    <p class="text-muted small mb-0" style="max-width: 480px; margin: 0 auto;">
+                        Actualmente no tienes vehículos ni activos fijos registrados bajo tu custodia. Cuando el área de almacén o administración te asigne herramientas o unidades, aparecerán listados aquí para tu consulta y control.
+                    </p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Cards para Agregar Tipos de Productos -->
     <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
         <div class="d-flex justify-content-between align-items-center mb-3">

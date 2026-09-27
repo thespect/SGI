@@ -98,10 +98,6 @@ Breadcrumbs::for('vehiculos.ver', function (BreadcrumbTrail $trail, $id) {
     $trail->push('Ver Vehículo', route('vehiculos.ver', $id));
 });
 
-Breadcrumbs::for('mantenimientos.dashboard', function (BreadcrumbTrail $trail) {
-    $trail->parent('vehiculos.index');
-    $trail->push('Dashboard de Mantenimientos', route('mantenimientos.dashboard'));
-});
 
 // ========================== PRODUCTOS FIJOS ==========================
 

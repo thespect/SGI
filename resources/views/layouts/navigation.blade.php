@@ -212,13 +212,6 @@
                                         <i class="fas fa-arrow-right text-muted"></i>
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('mantenimientos.dashboard') }}">
-                                        <span class="badge bg-warning bg-opacity-10 text-warning me-2"><i class="fas fa-tools"></i></span>
-                                        <span class="flex-grow-1">Dashboard Mantenimientos</span>
-                                        <span class="badge bg-primary text-white rounded-pill ms-1" style="font-size:0.65rem;">Nuevo</span>
-                                    </a>
-                                </li>
                                 @endif
                             </ul>
                         </li>

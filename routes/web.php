@@ -17,7 +17,6 @@ use App\Http\Controllers\{
     ExportExcelController,
     ImportExcelController,
     PlantillasController,
-    MantenimientoDashboardController,
 };
 use Illuminate\Support\Facades\Mail;
 
@@ -104,11 +103,6 @@ Route::controller(VehiculosController::class)->prefix('vehiculos')->group(functi
     Route::post('/mantenimiento/crear/{id}', 'insertarMantenimiento')->name('vehiculos.mantenimiento.insertar');
 });
 
-// Dashboard de Mantenimientos
-Route::controller(MantenimientoDashboardController::class)->prefix('mantenimientos')->group(function () {
-    Route::get('/', 'index')->name('mantenimientos.dashboard');
-    Route::post('/crear', 'store')->name('mantenimientos.store');
-});
 
 // Activos Fijos
 Route::controller(ProductoController::class)->group(function () {

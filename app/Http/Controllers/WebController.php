@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Movimiento;
 use App\Models\Usuario;
+use App\Models\Vehiculo;
+use App\Models\ProductoFijo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -127,6 +129,31 @@ class WebController extends Controller
             $consumiblesAgotados = $consumiblesCriticos->where('existencia', '<=', 0)->count();
             $consumiblesPorAgotar = $consumiblesCriticos->where('existencia', '>', 0)->count();
 
+            // Bienes y activos a cargo del usuario autenticado
+            $userId = $usuario?->id;
+            $misVehiculos = collect();
+            $misActivosFijos = collect();
+
+            if ($userId) {
+                // Vehículos asignados al usuario con mantenimientos recientes
+                $misVehiculos = Vehiculo::where('responsable', $userId)
+                    ->where('eliminado', 0)
+                    ->with([
+                        'ubicacion',
+                        'mantenimientos' => function ($q) {
+                            $q->orderBy('fecha', 'desc')->take(3);
+                        }
+                    ])
+                    ->get();
+
+                // Activos Fijos asignados al usuario
+                $misActivosFijos = ProductoFijo::where('responsable', $userId)
+                    ->with(['producto.ubicacion', 'producto.empresa'])
+                    ->get();
+            }
+
+            $totalCosasACargo = $misVehiculos->count() + $misActivosFijos->count();
+
             return view('web.home', compact(
                 'registros7Dias', 
                 'movimientos7Dias', 
@@ -134,7 +161,10 @@ class WebController extends Controller
                 'consumiblesCriticos',
                 'totalConsumiblesCriticos',
                 'consumiblesAgotados',
-                'consumiblesPorAgotar'
+                'consumiblesPorAgotar',
+                'misVehiculos',
+                'misActivosFijos',
+                'totalCosasACargo'
             ));
 
         } catch (\Throwable $e) {
