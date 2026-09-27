@@ -19,6 +19,14 @@ $etiquetasUnicas = \App\Models\Etiqueta::obtenerEtiquetasActivas(); // Suponiend
                 <p class="opacity-75 mb-0">Detalles completos del producto</p>
             </div>
             <div class="d-flex flex-wrap justify-content-end gap-2 w-100 w-md-auto">
+                <!-- Botón Vale de Salida - Siempre visible y destacado con estilo claro -->
+                <a href="{{ route('productos.fijos.generarVale', $productoFijo->id) }}" 
+                   class="btn btn-light btn-sm rounded-pill px-3 text-dark fw-semibold shadow-sm d-flex align-items-center"
+                   title="Descargar Vale de Salida en formato Word (.docx)">
+                    <i class="fas fa-file-word text-primary me-2 fs-6"></i>
+                    <span>Generar Vale de Salida</span>
+                </a>
+
                 @if (tienePermiso('fijos - modificar') && $productoFijo->estado != 'baja')
                 <!-- Botón Editar Información - Color verde -->
                 <button id="btnActualizarInfo" type="button" class="btn btn-success btn-sm rounded-pill px-3 flex-grow-1 flex-md-grow-0"
@@ -37,11 +45,6 @@ $etiquetasUnicas = \App\Models\Etiqueta::obtenerEtiquetasActivas(); // Suponiend
                     data-bs-toggle="modal" data-bs-target="#actualizarResponsableModal">
                     <i class="fas fa-user-edit me-1"></i> <span class="d-none d-md-inline">Cambiar responsable</span>
                 </button>
-
-                <!-- Botón Vale de Salida -->
-                <a href="{{ route('productos.fijos.generarVale', $productoFijo->id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 flex-grow-1 flex-md-grow-0">
-                    <i class="fas fa-file-word me-1"></i> <span class="d-none d-md-inline">Generar Vale de Salida</span>
-                </a>
                 @endif
             </div>
         </div>

@@ -10,8 +10,11 @@
             </h1>
             <p class="opacity-75 mb-0">Detalles completos del vehículo</p>
         </div>
-            <a href="{{ route('vehiculos.generarVale', $vehiculo->id) }}" class="btn btn-primary text-white shadow-sm">
-                <i class="fas fa-file-word me-1"></i> Generar Vale de Salida
+            <a href="{{ route('vehiculos.generarVale', $vehiculo->id) }}" 
+               class="btn btn-light btn-sm rounded-pill px-3 text-dark fw-semibold shadow-sm d-flex align-items-center"
+               title="Descargar Vale de Salida en formato Word (.docx)">
+                <i class="fas fa-file-word text-primary me-2 fs-6"></i>
+                <span>Generar Vale de Salida</span>
             </a>
             @if(tienePermiso('vehiculo - modificar') && !$vehiculo->eliminado)
             <button type="button"
