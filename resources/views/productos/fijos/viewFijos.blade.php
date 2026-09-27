@@ -101,7 +101,10 @@ $etiquetasUnicas = \App\Models\Etiqueta::obtenerEtiquetasActivas(); // Suponiend
                                     @else
                                         <div class="d-flex align-items-center gap-2 mt-1">
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary border">Sin código asignado</span>
-                                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" data-bs-toggle="modal" data-bs-target="#actualizarInfo">
+                                            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" 
+                                                    data-bs-toggle="modal" data-bs-target="#actualizarInfoModal"
+                                                    onclick="setTimeout(function(){ var input = document.getElementById('codigoBarraInput'); if(input){ input.focus(); if(!input.value.trim()){ generarCodigoBarra('codigoBarraInput', 'barcode-preview-fijo-edit'); var pBox = document.getElementById('preview-box-fijo-edit'); if(pBox) pBox.classList.remove('d-none'); } } }, 350);"
+                                                    title="Asignar código de barras a este activo fijo">
                                                 <i class="fas fa-magic me-1"></i> Asignar
                                             </button>
                                         </div>

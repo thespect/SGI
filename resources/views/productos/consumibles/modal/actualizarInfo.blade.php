@@ -91,7 +91,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="existencia" class="form-label">Existencia <span class="text-danger">*</span></label>
-                                <input type="number" name="existencia" id="existencia" class="form-control" min="0" max="100000" step="1" required placeholder="Cantidad disponible">
+                                <input type="number" name="existencia" id="existencia" class="form-control" min="0" max="100000" step="1" required placeholder="Cantidad disponible" value="{{ old('existencia', $productoConsumible->existencia) }}">
                             </div>
                         </div>
 

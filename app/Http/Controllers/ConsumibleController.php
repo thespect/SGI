@@ -222,7 +222,7 @@ class ConsumibleController extends Controller
 
             $request->validate([
                 'nombre' => 'required|string|max:150',
-                'codigoBarra' => 'nullable|string|max:13',
+                'codigoBarra' => 'nullable|string|max:100',
                 'descripcion' => 'nullable|string',
                 'precio' => 'nullable|numeric|min:0|max:99999999.99',
                 'comentario' => 'nullable|string',
