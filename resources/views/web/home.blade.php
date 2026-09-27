@@ -75,9 +75,122 @@
         </div>
     @endif
 
-    {{-- Card de Notificaciones/Alertas de Consumibles al 10% (Críticos y Faltantes) --}}
-    @if(isset($consumiblesCriticos) && (esSuperAdmin() || tienePermiso('consumible - leer')))
+    <!-- 1. Cards para Registrar Artículos en el Inventario -->
     <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.15s;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-1" style="color: var(--text-main);">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>Registrar Artículos en el Inventario
+                </h4>
+                <p class="text-muted small mb-0">Selecciona el tipo de producto que deseas agregar al sistema:</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Card 1: Activos Fijos -->
+            <div class="col-lg-4 col-md-6">
+                <div class="bento-card primary h-100 shadow-sm p-4 d-flex flex-column justify-content-between position-relative">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="bento-card-icon" style="width: 52px; height: 52px; font-size: 1.6rem;">
+                                <i class="fas fa-archive"></i>
+                            </div>
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-semibold">
+                                Activo Permanente
+                            </span>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">Activos Fijos</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; min-height: 48px;">
+                            Equipos de cómputo, mobiliario, maquinaria y bienes duraderos asignados con responsable y número de serie.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-top mt-3" style="border-color: var(--border-color) !important;">
+                        @if (tienePermiso('fijos - insertar'))
+                        <a href="{{ route('productos.indexFijos', ['crear' => 1]) }}" class="btn btn-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-2">
+                            <i class="fas fa-plus-circle"></i> Agregar Activo Fijo
+                        </a>
+                        @endif
+                        @if (tienePermiso('fijos - leer'))
+                        <a href="{{ route('productos.indexFijos') }}" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.85rem;">
+                            <i class="fas fa-boxes"></i> Ver Activos Fijos
+                        </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Consumibles -->
+            <div class="col-lg-4 col-md-6">
+                <div class="bento-card warning h-100 shadow-sm p-4 d-flex flex-column justify-content-between position-relative">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="bento-card-icon" style="width: 52px; height: 52px; font-size: 1.6rem;">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill small fw-semibold">
+                                Insumos y Suministros
+                            </span>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">Consumibles</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; min-height: 48px;">
+                            Materiales de uso recurrente, papelería, cafetería e insumos operativos con control de existencias mínimas y máximas.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-top mt-3" style="border-color: var(--border-color) !important;">
+                        @if (tienePermiso('consumible - insertar'))
+                        <a href="{{ route('productos_consumibles.index', ['crear' => 1]) }}" class="btn text-white w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-2" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none;">
+                            <i class="fas fa-plus-circle"></i> Agregar Consumible
+                        </a>
+                        @endif
+                        @if (tienePermiso('consumible - leer'))
+                        <a href="{{ route('productos_consumibles.index') }}" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.85rem;">
+                            <i class="fas fa-layer-group"></i> Ver Consumibles
+                        </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Compra / Venta -->
+            <div class="col-lg-4 col-md-6">
+                <div class="bento-card success h-100 shadow-sm p-4 d-flex flex-column justify-content-between position-relative">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="bento-card-icon" style="width: 52px; height: 52px; font-size: 1.6rem;">
+                                <i class="fas fa-cart-plus"></i>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill small fw-semibold">
+                                Comercialización
+                            </span>
+                        </div>
+                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">Compra-Venta</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; min-height: 48px;">
+                            Mercancía para venta, adquisición para proyectos específicos o comercialización con empresas y clientes externos.
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-top mt-3" style="border-color: var(--border-color) !important;">
+                        @if (tienePermiso('compra/venta - insertar'))
+                        <a href="{{ route('productos_compra_venta.index', ['crear' => 1]) }}" class="btn text-white w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                            <i class="fas fa-plus-circle"></i> Agregar Compra-Venta
+                        </a>
+                        @endif
+                        @if (tienePermiso('compra/venta - leer'))
+                        <a href="{{ route('productos_compra_venta.index') }}" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.85rem;">
+                            <i class="fas fa-store"></i> Ver Compra-Venta
+                        </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Apartado de Notificaciones / Alertas de Consumibles al 10% -->
+    @if(isset($consumiblesCriticos) && (esSuperAdmin() || tienePermiso('consumible - leer')))
+    <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden {{ $totalConsumiblesCriticos > 0 ? 'border-start border-danger border-4' : 'border-start border-success border-4' }}" style="background: var(--card-bg, #fff);">
             <div class="card-body p-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
@@ -190,10 +303,8 @@
     </div>
     @endif
 
-    {{-- ========================================================================= --}}
-    {{-- SECCIÓN: COSAS A MI CARGO (BIENES, VEHÍCULOS Y ACTIVOS BAJO RESGUARDO)   --}}
-    {{-- ========================================================================= --}}
-    <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.18s;" id="seccionCosasACargo">
+    <!-- 3. Sección: Artículos a mi Cargo -->
+    <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.25s;" id="seccionCosasACargo">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: var(--card-bg, #fff);">
             <!-- Header de la Sección -->
             <div class="card-header bg-white border-bottom p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -203,11 +314,11 @@
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <h4 class="fw-bold mb-0 text-dark">Artículos a mi Cargo</h4>
+                            <h4 class="fw-bold mb-0 text-dark">Artículos a mi cargo</h4>
                             @if(($totalCosasACargo ?? 0) > 0)
-                                <span class="badge bg-primary rounded-pill px-3 py-1">{{ $totalCosasACargo }} bienes asignados</span>
+                                <span class="badge bg-primary rounded-pill px-3 py-1">{{ $totalCosasACargo }} artículos a mi cargo</span>
                             @else
-                                <span class="badge bg-light text-muted border rounded-pill px-3 py-1">Sin bienes asignados</span>
+                                <span class="badge bg-light text-muted border rounded-pill px-3 py-1">Sin artículos a mi cargo</span>
                             @endif
                         </div>
                         <p class="text-muted small mb-0 mt-1">Vehículos, equipo de cómputo y mobiliario bajo tu resguardo personal.</p>
@@ -244,7 +355,7 @@
                                 aria-controls="pills-fijos" 
                                 aria-selected="false">
                             <i class="fas fa-laptop"></i>
-                            <span>Mobiliario y Activos Fijos</span>
+                            <span>Mobiliario y Activos Fijos a mi Cargo</span>
                             <span class="badge bg-secondary text-white rounded-pill ms-1">{{ $misActivosFijos->count() }}</span>
                         </button>
                     </li>
@@ -392,12 +503,12 @@
                     </div>
                 </div>
                 @else
-                <!-- Estado Vacío Cuando el Usuario no Tiene Bienes Asignados -->
+                <!-- Estado Vacío Cuando el Usuario no Tiene Artículos Asignados -->
                 <div class="text-center py-4">
                     <div class="rounded-circle bg-light p-3 d-inline-flex align-items-center justify-content-center mb-2" style="width: 64px; height: 64px;">
                         <i class="fas fa-shield-alt text-muted fa-2x"></i>
                     </div>
-                    <h6 class="fw-bold text-dark mb-1">Sin bienes asignados a tu resguardo</h6>
+                    <h6 class="fw-bold text-dark mb-1">Sin artículos a tu cargo actualmente</h6>
                     <p class="text-muted small mb-0" style="max-width: 480px; margin: 0 auto;">
                         Actualmente no tienes vehículos ni activos fijos registrados bajo tu custodia. Cuando el área de almacén o administración te asigne herramientas o unidades, aparecerán listados aquí para tu consulta y control.
                     </p>
@@ -407,118 +518,6 @@
         </div>
     </div>
 
-    <!-- Cards para Agregar Tipos de Productos -->
-    <div class="mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h4 class="fw-bold mb-1" style="color: var(--text-main);">
-                    <i class="fas fa-plus-circle text-primary me-2"></i>Registrar Productos en el Inventario
-                </h4>
-                <p class="text-muted small mb-0">Selecciona el tipo de producto que deseas agregar al sistema:</p>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <!-- Card 1: Activos Fijos -->
-            <div class="col-lg-4 col-md-6">
-                <div class="bento-card primary h-100 shadow-sm p-4 d-flex flex-column justify-content-between position-relative">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bento-card-icon" style="width: 52px; height: 52px; font-size: 1.6rem;">
-                                <i class="fas fa-archive"></i>
-                            </div>
-                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small fw-semibold">
-                                Activo Permanente
-                            </span>
-                        </div>
-                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">Activos Fijos</h4>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; min-height: 48px;">
-                            Equipos de cómputo, mobiliario, maquinaria y bienes duraderos asignados con responsable y número de serie.
-                        </p>
-                    </div>
-
-                    <div class="pt-3 border-top mt-3" style="border-color: var(--border-color) !important;">
-                        @if (tienePermiso('fijos - insertar'))
-                        <a href="{{ route('productos.indexFijos', ['crear' => 1]) }}" class="btn btn-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-2">
-                            <i class="fas fa-plus-circle"></i> Agregar Activo Fijo
-                        </a>
-                        @endif
-                        @if (tienePermiso('fijos - leer'))
-                        <a href="{{ route('productos.indexFijos') }}" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.85rem;">
-                            <i class="fas fa-boxes"></i> Ver Activos Fijos
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2: Consumibles -->
-            <div class="col-lg-4 col-md-6">
-                <div class="bento-card warning h-100 shadow-sm p-4 d-flex flex-column justify-content-between position-relative">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bento-card-icon" style="width: 52px; height: 52px; font-size: 1.6rem;">
-                                <i class="fas fa-box-open"></i>
-                            </div>
-                            <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill small fw-semibold">
-                                Insumos y Suministros
-                            </span>
-                        </div>
-                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">Consumibles</h4>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; min-height: 48px;">
-                            Materiales de uso recurrente, papelería, cafetería e insumos operativos con control de existencias mínimas y máximas.
-                        </p>
-                    </div>
-
-                    <div class="pt-3 border-top mt-3" style="border-color: var(--border-color) !important;">
-                        @if (tienePermiso('consumible - insertar'))
-                        <a href="{{ route('productos_consumibles.index', ['crear' => 1]) }}" class="btn text-white w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-2" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none;">
-                            <i class="fas fa-plus-circle"></i> Agregar Consumible
-                        </a>
-                        @endif
-                        @if (tienePermiso('consumible - leer'))
-                        <a href="{{ route('productos_consumibles.index') }}" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.85rem;">
-                            <i class="fas fa-layer-group"></i> Ver Consumibles
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3: Compra / Venta -->
-            <div class="col-lg-4 col-md-6">
-                <div class="bento-card success h-100 shadow-sm p-4 d-flex flex-column justify-content-between position-relative">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bento-card-icon" style="width: 52px; height: 52px; font-size: 1.6rem;">
-                                <i class="fas fa-cart-plus"></i>
-                            </div>
-                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill small fw-semibold">
-                                Comercialización
-                            </span>
-                        </div>
-                        <h4 class="fw-bold mb-2" style="color: var(--text-main);">Compra-Venta</h4>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; min-height: 48px;">
-                            Mercancía para venta, adquisición para proyectos específicos o comercialización con empresas y clientes externos.
-                        </p>
-                    </div>
-
-                    <div class="pt-3 border-top mt-3" style="border-color: var(--border-color) !important;">
-                        @if (tienePermiso('compra/venta - insertar'))
-                        <a href="{{ route('productos_compra_venta.index', ['crear' => 1]) }}" class="btn text-white w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
-                            <i class="fas fa-plus-circle"></i> Agregar Compra-Venta
-                        </a>
-                        @endif
-                        @if (tienePermiso('compra/venta - leer'))
-                        <a href="{{ route('productos_compra_venta.index') }}" class="btn btn-outline-secondary w-100 py-2 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.85rem;">
-                            <i class="fas fa-store"></i> Ver Compra-Venta
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 @if(esSuperAdmin() || tienePermiso('leerUsuarios'))
