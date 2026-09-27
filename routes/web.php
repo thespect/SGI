@@ -17,7 +17,6 @@ use App\Http\Controllers\{
     ExportExcelController,
     ImportExcelController,
     PlantillasController,
-    MovimientoController,
     MantenimientoDashboardController,
 };
 use Illuminate\Support\Facades\Mail;
@@ -64,8 +63,6 @@ Route::controller(RolController::class)->prefix('roles')->group(function () {
 // Permisos
 Route::controller(PermisosController::class)->prefix('permisos')->group(function () {
     Route::post('/actualizar', 'actualizarPermisos')->name('permisos.actualizar');
-    Route::post('/actualizar-matriz', 'actualizarMatriz')->name('permisos.actualizarMatriz');
-    Route::post('/toggle-ajax', 'togglePermisoAjax')->name('permisos.toggleAjax');
 });
 
 //usuarios
@@ -81,8 +78,6 @@ Route::controller(UsuarioController::class)->prefix('usuarios')->group(function 
     Route::put('/perfil/actualizar', 'actualizarPerfil')->name('usuarios.actualizarPerfil');
 });
 
-// Logs y Auditoría
-Route::get('/logs', [MovimientoController::class, 'index'])->name('movimientos.index');
 
 // Etiquetas
 Route::controller(EtiquetasController::class)->prefix('etiquetas')->group(function () {

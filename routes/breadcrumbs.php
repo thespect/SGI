@@ -146,11 +146,6 @@ Breadcrumbs::for('productos', function ($trail) {
     $trail->push('Productos', route('productos'));
 });
 
-// ========================== LOGS Y AUDITORIA ==========================
 
-Breadcrumbs::for('movimientos.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('web.home');
-    $trail->push('Historial de Logs y Auditoría', route('movimientos.index'));
-});
 
 

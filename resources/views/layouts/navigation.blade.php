@@ -224,11 +224,11 @@
                         </li>
                         @endif
 
-                        {{-- Usuarios y Roles --}}
-                        @if (esSuperAdmin() || tienePermiso('leerRol') || tienePermiso('leerUsuarios'))
+                        {{-- Usuarios y Roles (Solo Super Admin) --}}
+                        @if (esSuperAdmin())
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-users me-2"></i> Usuarios y Roles
+                                <i class="fas fa-users me-2"></i> Usuarios
                             </a>
                             <ul class="dropdown-menu shadow-lg dropdown-menu-end">
                                 @if (tienePermiso('leerRol'))
@@ -239,31 +239,12 @@
                                         <i class="fas fa-arrow-right text-muted"></i>
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('roles.index', ['vista' => 'matriz']) }}">
-                                        <span class="badge bg-primary bg-opacity-10 text-primary me-2"><i class="fas fa-th"></i></span>
-                                        <span class="flex-grow-1">Matriz de Roles</span>
-                                        <span class="badge bg-success text-white rounded-pill ms-1" style="font-size:0.65rem;">Tabla</span>
-                                    </a>
-                                </li>
                                 @endif
-                                @if (tienePermiso('leerUsuarios'))
+                                @if (esSuperAdmin() && tienePermiso('leerUsuarios'))
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('usuarios.index') }}">
                                         <span class="badge bg-secondary bg-opacity-10 text-secondary me-2"><i class="fas fa-users"></i></span>
                                         <span class="flex-grow-1">Usuarios</span>
-                                        <i class="fas fa-arrow-right text-muted"></i>
-                                    </a>
-                                </li>
-                                @endif
-                                @if (esSuperAdmin() || tienePermiso('leerUsuarios') || tienePermiso('leerRol'))
-                                <li>
-                                    <hr class="dropdown-divider mx-3">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('movimientos.index') }}">
-                                        <span class="badge bg-dark bg-opacity-10 text-dark me-2"><i class="fas fa-history"></i></span>
-                                        <span class="flex-grow-1">Logs y Auditoría</span>
                                         <i class="fas fa-arrow-right text-muted"></i>
                                     </a>
                                 </li>
