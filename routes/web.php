@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Mail;
 
 // Autenticación
 Route::get('/', [WebController::class, 'index'])->name('login');
+Route::get('/iniciar-sesion', fn () => redirect()->route('login'));
 Route::post('/iniciar-sesion', [WebController::class, 'verificarLogin'])->name('login.post');
 Route::get('/home', [WebController::class, 'home'])->name('web.home');
 Route::post('/logout', function () {
