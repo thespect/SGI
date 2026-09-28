@@ -35,6 +35,15 @@
             filter: invert(1) brightness(1.5);
             mix-blend-mode: screen;
         }
+
+        /* OVERLAY DE CARGA OCULTO POR DEFECTO */
+        #sgi-loading-overlay {
+            display: none !important;
+        }
+        #sgi-loading-overlay.active,
+        #sgi-loading-overlay.show {
+            display: flex !important;
+        }
     </style>
     <link rel="icon" type="image/png" href="{{ asset('logos/NAO2.png') }}">
 
